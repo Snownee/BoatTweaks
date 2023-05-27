@@ -1,0 +1,21 @@
+{
+  "KiwiConfig": [
+    {
+      "target": "snownee.boatrace.BoatRaceTweaksConfig"
+    }
+  ],
+  "KiwiModule": [
+    {
+      "target": "snownee.boatrace.BoatRaceTweaks"
+    }
+  ],
+  "KiwiPacket": [
+    {
+      "target": "snownee.boatrace.network.SUpdateGhostModePacket",
+      "data": {
+        "dir": "PLAY_TO_CLIENT",
+        "value": "update_ghost_mode"
+      }
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "snownee.boatrace.mixin",
+  "compatibilityLevel": "JAVA_16",
+  "refmap": "boatracetweaks.refmap.json",
+  "mixins": [
+    "BoatAutoRemoveMixin",
+    "BoatGhostModeMixin",
+    "BoatMixin",
+    "BoatSpecialBlockMixin"
+  ],
+  "client": [
+    "client.ClientPacketListenerMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
