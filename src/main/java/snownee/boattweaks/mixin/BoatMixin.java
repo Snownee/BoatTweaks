@@ -1,4 +1,4 @@
-package snownee.boatrace.mixin;
+package snownee.boattweaks.mixin;
 
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -12,9 +12,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import net.minecraft.world.entity.vehicle.Boat;
 import net.minecraft.world.level.block.Block;
-import snownee.boatrace.BoatRaceTweaks;
-import snownee.boatrace.BoatRaceTweaksConfig;
-import snownee.boatrace.duck.BRTBoostingBoat;
+import snownee.boattweaks.BoatTweaksConfig;
+import snownee.boattweaks.duck.BTBoostingBoat;
 
 @Mixin(value = Boat.class, priority = 900)
 public class BoatMixin {
@@ -31,58 +30,58 @@ public class BoatMixin {
 	private boolean inputRight;
 	@Shadow
 	private float deltaRotation;
-	private int boatrace$wallHitCd;
+	private int boattweaks$wallHitCd;
 
 	@Redirect(
 			method = "getGroundFriction", at = @At(
 			value = "INVOKE", target = "Lnet/minecraft/world/level/block/Block;getFriction()F"
 	)
 	)
-	private float boatrace$getGroundFriction(Block block) {
-		return BoatRaceTweaksConfig.getFriction(block);
+	private float boattweaks$getGroundFriction(Block block) {
+		return BoatTweaksConfig.getFriction(block);
 	}
 
 	@ModifyVariable(method = "controlBoat", at = @At(value = "STORE", ordinal = 0), index = 1)
-	private float boatrace$modifyForce(float f) {
+	private float boattweaks$modifyForce(float f) {
 		if (status == Boat.Status.ON_LAND) {
 			if (inputUp) {
-				BRTBoostingBoat boat = (BRTBoostingBoat) this;
-				f += BoatRaceTweaksConfig.forwardForce - 0.04F + boat.boatrace$getExtraForwardForce();
+				BTBoostingBoat boat = (BTBoostingBoat) this;
+				f += BoatTweaksConfig.forwardForce - 0.04F + boat.boattweaks$getExtraForwardForce();
 			}
 			if (inputDown) {
-				f -= BoatRaceTweaksConfig.backwardForce - 0.005F;
+				f -= BoatTweaksConfig.backwardForce - 0.005F;
 			}
 			if (inputLeft) {
-				deltaRotation += 1 - BoatRaceTweaksConfig.turningForce;
+				deltaRotation += 1 - BoatTweaksConfig.turningForce;
 			}
 			if (inputRight) {
-				deltaRotation -= 1 - BoatRaceTweaksConfig.turningForce;
+				deltaRotation -= 1 - BoatTweaksConfig.turningForce;
 			}
 		} else if (status == Boat.Status.IN_AIR) {
 			if (inputLeft) {
-				deltaRotation += 1 - BoatRaceTweaksConfig.turningForceInAir;
+				deltaRotation += 1 - BoatTweaksConfig.turningForceInAir;
 			}
 			if (inputRight) {
-				deltaRotation -= 1 - BoatRaceTweaksConfig.turningForceInAir;
+				deltaRotation -= 1 - BoatTweaksConfig.turningForceInAir;
 			}
 		}
 		return f;
 	}
 
 	@Inject(method = "tick", at = @At("HEAD"))
-	private void boatrace$tick(CallbackInfo ci) {
+	private void boattweaks$tick(CallbackInfo ci) {
 		Boat boat = (Boat) (Object) this;
-		if (boatrace$wallHitCd > 0) {
-			boatrace$wallHitCd--;
+		if (boattweaks$wallHitCd > 0) {
+			boattweaks$wallHitCd--;
 		} else if (boat.horizontalCollision) {
-			boatrace$wallHitCd = BoatRaceTweaksConfig.wallHitCooldown;
-			float scale = 1 - BoatRaceTweaksConfig.wallHitSpeedLoss;
+			boattweaks$wallHitCd = BoatTweaksConfig.wallHitCooldown;
+			float scale = 1 - BoatTweaksConfig.wallHitSpeedLoss;
 			boat.setDeltaMovement(boat.getDeltaMovement().multiply(scale, 1, scale));
 		}
 	}
 
 	@ModifyConstant(method = "tick", constant = @Constant(floatValue = 60F))
-	private float boatrace$modifyTimeOutTicks(float f) {
-		return BoatRaceTweaksConfig.outOfControlTicks;
+	private float boattweaks$modifyTimeOutTicks(float f) {
+		return BoatTweaksConfig.outOfControlTicks;
 	}
 }

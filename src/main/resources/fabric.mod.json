@@ -1,25 +1,25 @@
 {
   "schemaVersion": 1,
-  "id": "boatracetweaks",
+  "id": "boattweaks",
   "version": "${version}",
-  "name": "Boat Race Tweaks",
+  "name": "Boat Tweaks",
   "description": "Provides utilities and improves the maneuverability of the boats so that more people can enjoy the fun of boat racing.",
   "authors": [
     "Snownee"
   ],
   "contact": {
-    "homepage": "https://www.curseforge.com/minecraft/mc-mods/boat-race-tweaks",
-    "sources": "https://github.com/Snownee/BoatRaceTweaks",
-    "issues": "https://github.com/Snownee/BoatRaceTweaks/issues"
+    "homepage": "https://www.curseforge.com/minecraft/mc-mods/boat-tweaks",
+    "sources": "https://github.com/Snownee/BoatTweaks",
+    "issues": "https://github.com/Snownee/BoatTweaks/issues"
   },
   "license": "ARR",
   "entrypoints": {
     "main": [
-      "snownee.boatrace.util.CommonProxy"
+      "snownee.boattweaks.util.CommonProxy"
     ]
   },
   "mixins": [
-    "boatracetweaks.mixins.json"
+    "boattweaks.mixins.json"
   ],
   "depends": {
     "fabric-api": "*",

@@ -1,4 +1,4 @@
-# Boat Race Tweaks
+# Boat Racing Tweaks
 
 This mod provides utilities and improves the maneuverability of the boats so that more people can enjoy the fun of boat
 racing.

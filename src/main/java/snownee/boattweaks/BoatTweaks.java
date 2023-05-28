@@ -1,4 +1,4 @@
-package snownee.boatrace;
+package snownee.boattweaks;
 
 import java.util.Objects;
 
@@ -10,17 +10,17 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
-import snownee.boatrace.duck.BRTClientPacketListener;
-import snownee.boatrace.network.SUpdateGhostModePacket;
+import snownee.boattweaks.duck.BTClientPacketListener;
+import snownee.boattweaks.network.SUpdateGhostModePacket;
 import snownee.kiwi.AbstractModule;
 import snownee.kiwi.KiwiGO;
 import snownee.kiwi.KiwiModule;
 
 @KiwiModule
-public class BoatRaceTweaks extends AbstractModule {
+public class BoatTweaks extends AbstractModule {
 
-	public static final String ID = "boatracetweaks";
-	public static final Logger LOGGER = LogManager.getLogger("BoatRaceTweaks");
+	public static final String ID = "boattweaks";
+	public static final Logger LOGGER = LogManager.getLogger("BoatTweaks");
 
 	public static final KiwiGO<SoundEvent> BOOST_SOUND = go(() -> new SoundEvent(new ResourceLocation(ID, "boost_sound")));
 	public static final KiwiGO<SoundEvent> JUMP_SOUND = go(() -> new SoundEvent(new ResourceLocation(ID, "jump_sound")));
@@ -33,7 +33,7 @@ public class BoatRaceTweaks extends AbstractModule {
 
 	public static boolean isGhostMode(Level level) {
 		if (level.isClientSide) {
-			return ((BRTClientPacketListener) Objects.requireNonNull(Minecraft.getInstance().getConnection())).boatrace$getGhostMode();
+			return ((BTClientPacketListener) Objects.requireNonNull(Minecraft.getInstance().getConnection())).boattweaks$getGhostMode();
 		} else {
 			return level.getGameRules().getBoolean(GHOST_MODE);
 		}

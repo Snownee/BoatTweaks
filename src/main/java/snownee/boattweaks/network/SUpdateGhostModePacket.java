@@ -1,4 +1,4 @@
-package snownee.boatrace.network;
+package snownee.boattweaks.network;
 
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
@@ -9,7 +9,7 @@ import org.jetbrains.annotations.Nullable;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
-import snownee.boatrace.duck.BRTClientPacketListener;
+import snownee.boattweaks.duck.BTClientPacketListener;
 import snownee.kiwi.network.KiwiPacket;
 import snownee.kiwi.network.PacketHandler;
 
@@ -27,7 +27,7 @@ public class SUpdateGhostModePacket extends PacketHandler {
 	public CompletableFuture<FriendlyByteBuf> receive(Function<Runnable, CompletableFuture<FriendlyByteBuf>> executor, FriendlyByteBuf buf, @Nullable ServerPlayer player) {
 		boolean value = buf.readBoolean();
 		return executor.apply(() -> {
-			((BRTClientPacketListener) Objects.requireNonNull(Minecraft.getInstance().getConnection())).boatrace$setGhostMode(value);
+			((BTClientPacketListener) Objects.requireNonNull(Minecraft.getInstance().getConnection())).boattweaks$setGhostMode(value);
 		});
 	}
 }

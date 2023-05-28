@@ -1,9 +1,9 @@
 {
   "required": true,
   "minVersion": "0.8",
-  "package": "snownee.boatrace.mixin",
+  "package": "snownee.boattweaks.mixin",
   "compatibilityLevel": "JAVA_16",
-  "refmap": "boatracetweaks.refmap.json",
+  "refmap": "boattweaks.refmap.json",
   "mixins": [
     "BoatAutoRemoveMixin",
     "BoatGhostModeMixin",

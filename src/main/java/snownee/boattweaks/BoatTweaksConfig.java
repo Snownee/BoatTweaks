@@ -1,4 +1,4 @@
-package snownee.boatrace;
+package snownee.boattweaks;
 
 import java.util.Map;
 
@@ -12,7 +12,7 @@ import snownee.kiwi.KiwiModule;
 import snownee.kiwi.config.KiwiConfig;
 
 @KiwiConfig
-public class BoatRaceTweaksConfig {
+public class BoatTweaksConfig {
 
 	private static final Object2FloatMap<Block> frictionOverridesMap = new Object2FloatOpenHashMap<>();
 	@KiwiModule.Skip
@@ -71,7 +71,7 @@ public class BoatRaceTweaksConfig {
 		});
 		boostingBlock = Registry.BLOCK.get(ResourceLocation.tryParse(boostingBlockId));
 		jumpingBlock = Registry.BLOCK.get(ResourceLocation.tryParse(jumpingBlockId));
-		BoatRaceTweaks.LOGGER.info("BoatRaceTweaks configurations reloaded");
+		BoatTweaks.LOGGER.info("BoatRaceTweaks configurations reloaded");
 	}
 
 	public static float getFriction(Block block) {
