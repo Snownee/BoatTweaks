@@ -6,6 +6,8 @@ racing.
 ## Features
 
 - Customize the boat's acceleration, deceleration.
+- Customize the boat's turning force in air, and in other cases.
+- Customize the boat's speed loss when it hits walls.
 - Customize the block slipperiness for boats only.
 - A game rule to disable the boat's collision with other boats.
 - A game rule to automatically remove unused boats.

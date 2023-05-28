@@ -1,4 +1,4 @@
-package snownee.boatrace;
+package snownee.boatrace.duck;
 
 public interface BRTClientPacketListener {
 	boolean boatrace$getGhostMode();

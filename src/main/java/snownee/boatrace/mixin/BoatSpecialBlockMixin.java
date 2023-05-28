@@ -11,16 +11,17 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.entity.vehicle.Boat;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import snownee.boatrace.BoatRaceTweaks;
 import snownee.boatrace.BoatRaceTweaksConfig;
+import snownee.boatrace.duck.BRTBoostingBoat;
 
 @Mixin(Boat.class)
-public class BoatSpecialBlockMixin {
+public abstract class BoatSpecialBlockMixin implements BRTBoostingBoat {
 
 	private boolean boatrace$jump;
-	private int[] boatrace$directionalBoostTicks = new int[4];
+	private int boatrace$boostTicks;
 
 	@Inject(
 			method = "getGroundFriction", at = @At(
@@ -28,16 +29,16 @@ public class BoatSpecialBlockMixin {
 	), locals = LocalCapture.CAPTURE_FAILHARD
 	)
 	private void boatrace$getGroundFriction(CallbackInfoReturnable<Float> cir, AABB aABB, AABB aABB2, int i, int j, int k, int l, int m, int n, VoxelShape voxelShape, float f, int o, BlockPos.MutableBlockPos mutableBlockPos, int p, int q, int r, int s, BlockState blockState) {
-		if (blockState.is(BoatRaceTweaksConfig.jumpingBlock)) {
+		Boat boat = (Boat) (Object) this;
+		if (!boatrace$jump && blockState.is(BoatRaceTweaksConfig.jumpingBlock)) {
 			boatrace$jump = true;
+			boat.playSound(BoatRaceTweaks.JUMP_SOUND.get());
 		}
-		if (blockState.is(BoatRaceTweaksConfig.directionalBoostingBlock) && blockState.hasProperty(BlockStateProperties.HORIZONTAL_FACING)) {
-			Direction direction = blockState.getValue(BlockStateProperties.HORIZONTAL_FACING).getOpposite();
-			int index = direction.get2DDataValue();
-			if (boatrace$directionalBoostTicks[index] == 0) {
-				boatrace$directionalBoostTicks[index] = BoatRaceTweaksConfig.directionalBoostingTicks;
-				boatrace$directionalBoostTicks[direction.getOpposite().get2DDataValue()] = 0;
+		if (boatrace$boostTicks < BoatRaceTweaksConfig.boostingTicks && blockState.is(BoatRaceTweaksConfig.boostingBlock)) {
+			if (BoatRaceTweaksConfig.boostingTicks - boatrace$boostTicks > 10) {
+				boat.playSound(BoatRaceTweaks.BOOST_SOUND.get());
 			}
+			boatrace$boostTicks = BoatRaceTweaksConfig.boostingTicks;
 		}
 	}
 
@@ -48,13 +49,13 @@ public class BoatSpecialBlockMixin {
 			boatrace$jump = false;
 			boat.setDeltaMovement(boat.getDeltaMovement().with(Direction.Axis.Y, BoatRaceTweaksConfig.jumpingForce));
 		}
-		for (int i = 0; i < 4; i++) {
-			if (boatrace$directionalBoostTicks[i] > 0) {
-				boatrace$directionalBoostTicks[i]--;
-				Direction direction = Direction.from2DDataValue(i);
-				boat.setDeltaMovement(boat.getDeltaMovement().add(direction.getStepX() * BoatRaceTweaksConfig.directionalBoostingForce, 0, direction.getStepZ() * BoatRaceTweaksConfig.directionalBoostingForce));
-			}
+		if (boatrace$boostTicks > 0) {
+			boatrace$boostTicks--;
 		}
 	}
 
+	@Override
+	public float boatrace$getExtraForwardForce() {
+		return boatrace$boostTicks > 0 ? BoatRaceTweaksConfig.boostingForce : 0;
+	}
 }

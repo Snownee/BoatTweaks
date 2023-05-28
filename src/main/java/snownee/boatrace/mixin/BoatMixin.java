@@ -4,15 +4,19 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Constant;
+import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyConstant;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.Redirect;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import net.minecraft.world.entity.vehicle.Boat;
 import net.minecraft.world.level.block.Block;
+import snownee.boatrace.BoatRaceTweaks;
 import snownee.boatrace.BoatRaceTweaksConfig;
+import snownee.boatrace.duck.BRTBoostingBoat;
 
-@Mixin(Boat.class)
+@Mixin(value = Boat.class, priority = 900)
 public class BoatMixin {
 
 	@Shadow
@@ -21,6 +25,13 @@ public class BoatMixin {
 	private boolean inputUp;
 	@Shadow
 	private boolean inputDown;
+	@Shadow
+	private boolean inputLeft;
+	@Shadow
+	private boolean inputRight;
+	@Shadow
+	private float deltaRotation;
+	private int boatrace$wallHitCd;
 
 	@Redirect(
 			method = "getGroundFriction", at = @At(
@@ -35,13 +46,39 @@ public class BoatMixin {
 	private float boatrace$modifyForce(float f) {
 		if (status == Boat.Status.ON_LAND) {
 			if (inputUp) {
-				f += BoatRaceTweaksConfig.forwardForce - 0.04F;
+				BRTBoostingBoat boat = (BRTBoostingBoat) this;
+				f += BoatRaceTweaksConfig.forwardForce - 0.04F + boat.boatrace$getExtraForwardForce();
 			}
 			if (inputDown) {
 				f -= BoatRaceTweaksConfig.backwardForce - 0.005F;
 			}
+			if (inputLeft) {
+				deltaRotation += 1 - BoatRaceTweaksConfig.turningForce;
+			}
+			if (inputRight) {
+				deltaRotation -= 1 - BoatRaceTweaksConfig.turningForce;
+			}
+		} else if (status == Boat.Status.IN_AIR) {
+			if (inputLeft) {
+				deltaRotation += 1 - BoatRaceTweaksConfig.turningForceInAir;
+			}
+			if (inputRight) {
+				deltaRotation -= 1 - BoatRaceTweaksConfig.turningForceInAir;
+			}
 		}
 		return f;
+	}
+
+	@Inject(method = "tick", at = @At("HEAD"))
+	private void boatrace$tick(CallbackInfo ci) {
+		Boat boat = (Boat) (Object) this;
+		if (boatrace$wallHitCd > 0) {
+			boatrace$wallHitCd--;
+		} else if (boat.horizontalCollision) {
+			boatrace$wallHitCd = BoatRaceTweaksConfig.wallHitCooldown;
+			float scale = 1 - BoatRaceTweaksConfig.wallHitSpeedLoss;
+			boat.setDeltaMovement(boat.getDeltaMovement().multiply(scale, 1, scale));
+		}
 	}
 
 	@ModifyConstant(method = "tick", constant = @Constant(floatValue = 60F))

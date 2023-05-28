@@ -24,21 +24,36 @@ public class BoatRaceTweaksConfig {
 			"magenta_glazed_terracotta", 0.93,
 			"yellow_glazed_terracotta", 0.93
 	);
+	@KiwiConfig.Range(min = 0)
 	public static float forwardForce = 0.08F;
+	@KiwiConfig.Range(min = 0)
 	public static float backwardForce = 0.01F;
+	@KiwiConfig.Range(min = 0)
+	public static float turningForce = 0.9F;
+	@KiwiConfig.Range(min = 0)
+	public static float turningForceInAir = 0.25F;
+	@KiwiConfig.Range(min = 0)
 	public static float outOfControlTicks = 120F;
-	@KiwiConfig.Path("directionalBoostingBlock.block")
-	public static String directionalBoostingBlockId = "magenta_glazed_terracotta";
-	public static Block directionalBoostingBlock;
-	@KiwiConfig.Path("directionalBoostingBlock.ticks")
-	public static int directionalBoostingTicks = 15;
-	@KiwiConfig.Path("directionalBoostingBlock.force")
-	public static float directionalBoostingForce = 0.1F;
+	@KiwiConfig.Path("boostingBlock.block")
+	public static String boostingBlockId = "magenta_glazed_terracotta";
+	public static Block boostingBlock;
+	@KiwiConfig.Range(min = 0)
+	@KiwiConfig.Path("boostingBlock.ticks")
+	public static int boostingTicks = 15;
+	@KiwiConfig.Path("boostingBlock.force")
+	public static float boostingForce = 0.08F;
 	@KiwiConfig.Path("jumpingBlock.block")
 	public static String jumpingBlockId = "yellow_glazed_terracotta";
 	public static Block jumpingBlock;
+	@KiwiConfig.Range(min = 0)
 	@KiwiConfig.Path("jumpingBlock.force")
 	public static float jumpingForce = 1F;
+	@KiwiConfig.Range(min = 0, max = 1)
+	@KiwiConfig.Path("wallHit.speedLoss")
+	public static float wallHitSpeedLoss = 0.2F;
+	@KiwiConfig.Range(min = 0)
+	@KiwiConfig.Path("wallHit.cooldown")
+	public static int wallHitCooldown = 10;
 
 	public static void onChanged(String path) {
 		if (inited) {
@@ -54,7 +69,7 @@ public class BoatRaceTweaksConfig {
 				frictionOverridesMap.put(block, v.floatValue());
 			}
 		});
-		directionalBoostingBlock = Registry.BLOCK.get(ResourceLocation.tryParse(directionalBoostingBlockId));
+		boostingBlock = Registry.BLOCK.get(ResourceLocation.tryParse(boostingBlockId));
 		jumpingBlock = Registry.BLOCK.get(ResourceLocation.tryParse(jumpingBlockId));
 		BoatRaceTweaks.LOGGER.info("BoatRaceTweaks configurations reloaded");
 	}
