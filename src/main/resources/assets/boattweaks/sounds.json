@@ -1,10 +1,10 @@
 {
-  "jump_sound": {
+  "eject": {
     "sounds": [
       "minecraft:tile/piston/out"
     ]
   },
-  "boost_sound": {
+  "boost": {
     "sounds": [
       "minecraft:fireworks/launch1"
     ]

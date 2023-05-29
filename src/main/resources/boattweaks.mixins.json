@@ -8,7 +8,8 @@
     "BoatAutoRemoveMixin",
     "BoatGhostModeMixin",
     "BoatMixin",
-    "BoatSpecialBlockMixin"
+    "BoatSpecialBlockMixin",
+    "ServerPlayerMixin"
   ],
   "client": [
     "client.ClientPacketListenerMixin"

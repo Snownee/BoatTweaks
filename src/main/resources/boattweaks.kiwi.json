@@ -16,6 +16,20 @@
         "dir": "PLAY_TO_CLIENT",
         "value": "update_ghost_mode"
       }
+    },
+    {
+      "target": "snownee.boattweaks.network.SSyncConfigPacket",
+      "data": {
+        "dir": "PLAY_TO_CLIENT",
+        "value": "sync_config"
+      }
+    },
+    {
+      "target": "snownee.boattweaks.network.CPingServerPacket",
+      "data": {
+        "dir": "PLAY_TO_SERVER",
+        "value": "ping_server"
+      }
     }
   ]
 }
