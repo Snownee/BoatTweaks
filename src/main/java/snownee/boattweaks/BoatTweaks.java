@@ -15,7 +15,9 @@ import snownee.boattweaks.network.SUpdateGhostModePacket;
 import snownee.kiwi.AbstractModule;
 import snownee.kiwi.KiwiGO;
 import snownee.kiwi.KiwiModule;
+import snownee.kiwi.Mod;
 
+@Mod(BoatTweaks.ID)
 @KiwiModule
 public class BoatTweaks extends AbstractModule {
 
