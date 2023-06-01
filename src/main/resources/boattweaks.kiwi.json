@@ -2,6 +2,12 @@
   "KiwiConfig": [
     {
       "target": "snownee.boattweaks.BoatTweaksConfig"
+    },
+    {
+      "target": "snownee.boattweaks.BoatTweaksClientConfig",
+      "data": {
+        "type": "CLIENT"
+      }
     }
   ],
   "KiwiModule": [

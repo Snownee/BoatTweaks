@@ -12,7 +12,8 @@
     "ServerPlayerMixin"
   ],
   "client": [
-    "client.ClientPacketListenerMixin"
+    "client.ClientPacketListenerMixin",
+    "client.KeyboardInputMixin"
   ],
   "injectors": {
     "defaultRequire": 1
