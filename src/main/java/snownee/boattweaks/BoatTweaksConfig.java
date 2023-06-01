@@ -31,6 +31,8 @@ public class BoatTweaksConfig {
 	@KiwiConfig.Range(min = 0)
 	public static float turningForceInAir = 0.25F;
 	@KiwiConfig.Range(min = 0)
+	public static float stepUpHeight = 1F;
+	@KiwiConfig.Range(min = 0)
 	public static int outOfControlTicks = 120;
 	@KiwiConfig.Path("boostingBlock.block")
 	public static String boostingBlock = "magenta_glazed_terracotta";
@@ -63,6 +65,7 @@ public class BoatTweaksConfig {
 		public float backwardForce = 0.005F;
 		public float turningForce = 1F;
 		public float turningForceInAir = 1F;
+		public float stepUpHeight = 0F;
 		public float outOfControlTicks = 60F;
 		public Block boostingBlock = Blocks.AIR;
 		public int boostingTicks = 0;
@@ -83,6 +86,7 @@ public class BoatTweaksConfig {
 			instance.backwardForce = buf.readFloat();
 			instance.turningForce = buf.readFloat();
 			instance.turningForceInAir = buf.readFloat();
+			instance.stepUpHeight = buf.readFloat();
 			instance.outOfControlTicks = buf.readFloat();
 			instance.boostingBlock = Registry.BLOCK.byId(buf.readVarInt());
 			instance.boostingTicks = buf.readVarInt();
@@ -107,6 +111,7 @@ public class BoatTweaksConfig {
 			instance.backwardForce = BoatTweaksConfig.backwardForce;
 			instance.turningForce = BoatTweaksConfig.turningForce;
 			instance.turningForceInAir = BoatTweaksConfig.turningForceInAir;
+			instance.stepUpHeight = BoatTweaksConfig.stepUpHeight;
 			instance.outOfControlTicks = BoatTweaksConfig.outOfControlTicks;
 			instance.boostingBlock = Registry.BLOCK.get(ResourceLocation.tryParse(BoatTweaksConfig.boostingBlock));
 			instance.boostingTicks = BoatTweaksConfig.boostingTicks;
@@ -128,6 +133,7 @@ public class BoatTweaksConfig {
 			buf.writeFloat(backwardForce);
 			buf.writeFloat(turningForce);
 			buf.writeFloat(turningForceInAir);
+			buf.writeFloat(stepUpHeight);
 			buf.writeFloat(outOfControlTicks);
 			buf.writeVarInt(Registry.BLOCK.getId(boostingBlock));
 			buf.writeVarInt(boostingTicks);

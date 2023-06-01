@@ -36,6 +36,12 @@ public class BoatMixin {
 	private float deltaRotation;
 	private int boattweaks$wallHitCd;
 
+	@Inject(method = "<init>(Lnet/minecraft/world/entity/EntityType;Lnet/minecraft/world/level/Level;)V", at = @At("RETURN"))
+	private void boattweaks$init(CallbackInfo ci) {
+		Boat boat = (Boat) (Object) this;
+		boat.maxUpStep = BoatTweaks.CONFIG.stepUpHeight;
+	}
+
 	@Redirect(
 			method = "getGroundFriction", at = @At(
 			value = "INVOKE", target = "Lnet/minecraft/world/level/block/Block;getFriction()F"
