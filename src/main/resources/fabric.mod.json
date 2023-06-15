@@ -21,6 +21,7 @@
   "mixins": [
     "boattweaks.mixins.json"
   ],
+  "accessWidener": "boattweaks.accesswidener",
   "depends": {
     "fabric-api": "*",
     "kiwi": ">=8.3",
