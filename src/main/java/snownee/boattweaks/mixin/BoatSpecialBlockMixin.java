@@ -1,5 +1,8 @@
 package snownee.boattweaks.mixin;
 
+import java.util.IdentityHashMap;
+import java.util.Map;
+
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -7,8 +10,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
-import it.unimi.dsi.fastutil.objects.Object2IntMap;
-import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenCustomHashMap;
+import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.entity.vehicle.Boat;
@@ -22,7 +25,8 @@ import snownee.boattweaks.duck.BTBoostingBoat;
 @Mixin(Boat.class)
 public abstract class BoatSpecialBlockMixin implements BTBoostingBoat {
 
-	private final Object2IntMap<Block> boattweaks$specialBlockCooldowns = new Object2IntOpenHashMap<>();
+	private final Object2IntOpenCustomHashMap<Block> boattweaks$specialBlockCooldowns = new Object2IntOpenCustomHashMap<>(Math.min(BoatTweaks.CUSTOM_SPECIAL_BLOCKS.size(), 10), Util.identityStrategy());
+	private final Map<Block, BlockPos> boattweaks$specialBlockRecords = new IdentityHashMap<>(Math.min(BoatTweaks.CUSTOM_SPECIAL_BLOCKS.size(), 10));
 	private int boattweaks$eject;
 	private int boattweaks$boostTicks;
 
@@ -61,6 +65,7 @@ public abstract class BoatSpecialBlockMixin implements BTBoostingBoat {
 		int cooldown = BoatTweaks.CUSTOM_SPECIAL_BLOCKS.getInt(block);
 		if (cooldown > 0 && boattweaks$specialBlockCooldowns.getInt(block) == 0) {
 			boattweaks$specialBlockCooldowns.put(block, cooldown);
+			boattweaks$specialBlockRecords.put(block, pos.immutable());
 		}
 	}
 
@@ -80,18 +85,20 @@ public abstract class BoatSpecialBlockMixin implements BTBoostingBoat {
 		if (boattweaks$boostTicks > 0) {
 			boattweaks$boostTicks--;
 		}
-		boattweaks$specialBlockCooldowns.object2IntEntrySet().removeIf(entry -> {
+		boattweaks$specialBlockCooldowns.object2IntEntrySet().fastIterator().forEachRemaining(entry -> {
 			Block block = entry.getKey();
 			int cooldown = entry.getIntValue();
 			if (BoatTweaks.CUSTOM_SPECIAL_BLOCKS.getInt(block) == cooldown) {
-				BoatTweaks.postSpecialBlockEvent(boat, block);
+				BlockPos pos = boattweaks$specialBlockRecords.get(block);
+				if (pos != null) {
+					BlockState blockState = boat.level.getBlockState(pos);
+					if (blockState.is(block)) {
+						BoatTweaks.postSpecialBlockEvent(boat, blockState, pos);
+					}
+				}
 			}
-			--cooldown;
 			if (cooldown > 0) {
-				entry.setValue(cooldown);
-				return false;
-			} else {
-				return true;
+				entry.setValue(cooldown - 1);
 			}
 		});
 	}

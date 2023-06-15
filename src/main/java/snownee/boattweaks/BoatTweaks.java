@@ -9,14 +9,17 @@ import org.apache.logging.log4j.Logger;
 import com.google.common.collect.Lists;
 
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
-import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenCustomHashMap;
+import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
+import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.vehicle.Boat;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
 import snownee.boattweaks.duck.BTClientPacketListener;
 import snownee.boattweaks.network.SUpdateGhostModePacket;
 import snownee.kiwi.AbstractModule;
@@ -36,7 +39,7 @@ public class BoatTweaks extends AbstractModule {
 			SUpdateGhostModePacket.sync(p, rule.get());
 		});
 	}));
-	public static final Object2IntMap<Block> CUSTOM_SPECIAL_BLOCKS = new Object2IntOpenHashMap<>();
+	public static final Object2IntMap<Block> CUSTOM_SPECIAL_BLOCKS = new Object2IntOpenCustomHashMap<>(8, Util.identityStrategy());
 	public static final List<SpecialBlockEvent> SPECIAL_BLOCK_LISTENERS = Lists.newArrayList();
 	public static BoatTweaksConfig.Instance CONFIG = new BoatTweaksConfig.Instance();
 
@@ -48,7 +51,7 @@ public class BoatTweaks extends AbstractModule {
 		}
 	}
 
-	public static void postSpecialBlockEvent(Boat boat, Block block) {
-		LOGGER.info(boat.level.isClientSide);
+	public static void postSpecialBlockEvent(Boat boat, BlockState blockState, BlockPos blockPos) {
+		SPECIAL_BLOCK_LISTENERS.forEach(listener -> listener.on(boat, blockState, blockPos));
 	}
 }
