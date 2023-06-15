@@ -62,6 +62,8 @@ dependencies {
         exclude(group: "net.fabricmc.fabric-api")
     }
     modImplementation "com.terraformersmc:modmenu:${project.modmenu_version}"
+    
+    modImplementation "dev.latvian.mods:kubejs-fabric:1902.6.0-build.119"
 }
 
 loom {

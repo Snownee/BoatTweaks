@@ -9,8 +9,10 @@ import snownee.boattweaks.BoatTweaks;
 import snownee.boattweaks.BoatTweaksConfig;
 import snownee.boattweaks.network.SSyncConfigPacket;
 import snownee.boattweaks.network.SUpdateGhostModePacket;
+import snownee.kiwi.Mod;
 import snownee.kiwi.config.KiwiConfigManager;
 
+@Mod(BoatTweaks.ID)
 public class CommonProxy implements ModInitializer {
 	private static String version;
 

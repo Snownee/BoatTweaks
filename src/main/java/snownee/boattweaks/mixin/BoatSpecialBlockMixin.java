@@ -7,9 +7,12 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.entity.vehicle.Boat;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.shapes.VoxelShape;
@@ -19,6 +22,7 @@ import snownee.boattweaks.duck.BTBoostingBoat;
 @Mixin(Boat.class)
 public abstract class BoatSpecialBlockMixin implements BTBoostingBoat {
 
+	private final Object2IntMap<Block> boattweaks$specialBlockCooldowns = new Object2IntOpenHashMap<>();
 	private int boattweaks$eject;
 	private int boattweaks$boostTicks;
 
@@ -53,9 +57,14 @@ public abstract class BoatSpecialBlockMixin implements BTBoostingBoat {
 			}
 			boattweaks$boostTicks = BoatTweaks.CONFIG.boostingTicks;
 		}
+		Block block = blockState.getBlock();
+		int cooldown = BoatTweaks.CUSTOM_SPECIAL_BLOCKS.getInt(block);
+		if (cooldown > 0 && boattweaks$specialBlockCooldowns.getInt(block) == 0) {
+			boattweaks$specialBlockCooldowns.put(block, cooldown);
+		}
 	}
 
-	@Inject(method = "tick", at = @At("HEAD"))
+	@Inject(method = "tick", at = @At("TAIL"))
 	private void boattweaks$tick(CallbackInfo ci) {
 		Boat boat = (Boat) (Object) this;
 		if (boattweaks$eject > 0) {
@@ -71,6 +80,20 @@ public abstract class BoatSpecialBlockMixin implements BTBoostingBoat {
 		if (boattweaks$boostTicks > 0) {
 			boattweaks$boostTicks--;
 		}
+		boattweaks$specialBlockCooldowns.object2IntEntrySet().removeIf(entry -> {
+			Block block = entry.getKey();
+			int cooldown = entry.getIntValue();
+			if (BoatTweaks.CUSTOM_SPECIAL_BLOCKS.getInt(block) == cooldown) {
+				BoatTweaks.postSpecialBlockEvent(boat, block);
+			}
+			--cooldown;
+			if (cooldown > 0) {
+				entry.setValue(cooldown);
+				return false;
+			} else {
+				return true;
+			}
+		});
 	}
 
 	@Override
