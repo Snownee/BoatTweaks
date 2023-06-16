@@ -18,6 +18,10 @@ public class BoatMovementDistanceMixin implements BTMovementDistance {
 	private Boat.Status status;
 	@Shadow
 	private Boat.Status oldStatus;
+	@Shadow
+	private double lastYd;
+	private double boattweaks$lastX;
+	private double boattweaks$lastZ;
 
 	@Override
 	public float boattweaks$getDistance() {
@@ -32,23 +36,35 @@ public class BoatMovementDistanceMixin implements BTMovementDistance {
 	}
 
 	@Inject(method = "tick", at = @At("TAIL"))
-	private void boattweaks$tick(CallbackInfo ci) {
+	private void boattweaks$postTick(CallbackInfo ci) {
 		Boat boat = (Boat) (Object) this;
 		if (boat.level.isClientSide) {
 			return;
 		}
+		if (boat.tickCount == 1) {
+			boattweaks$updateLastPos();
+			return;
+		}
 		if (oldStatus != Boat.Status.ON_LAND && oldStatus != Boat.Status.IN_AIR) {
+			boattweaks$updateLastPos();
 			return;
 		}
 		if (status != Boat.Status.ON_LAND && status != Boat.Status.IN_AIR) {
+			boattweaks$updateLastPos();
 			return;
 		}
-		double dx = Math.abs(boat.xOld - boat.getX());
-		double dz = Math.abs(boat.zOld - boat.getZ());
-		if (dx < 0.001 && dz < 0.001) {
-			return;
+		double dx = Math.abs(boattweaks$lastX - boat.getX());
+		double dz = Math.abs(boattweaks$lastZ - boat.getZ());
+		if (dx > 0.001 || dz > 0.001) {
+			boattweaks$setDistance(boattweaks$getDistance() + (float) Math.sqrt(dx * dx + dz * dz));
 		}
-		boattweaks$setDistance(boattweaks$getDistance() + (float) Math.sqrt(dx * dx + dz * dz));
+		boattweaks$updateLastPos();
+	}
+
+	private void boattweaks$updateLastPos() {
+		Boat boat = (Boat) (Object) this;
+		boattweaks$lastX = boat.getX();
+		boattweaks$lastZ = boat.getZ();
 	}
 
 	@Inject(method = "addAdditionalSaveData", at = @At("TAIL"))

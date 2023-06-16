@@ -20,6 +20,7 @@ import snownee.boattweaks.BoatSettings;
 import snownee.boattweaks.BoatTweaks;
 import snownee.boattweaks.duck.BTBoostingBoat;
 import snownee.boattweaks.duck.BTConfigurableBoat;
+import snownee.boattweaks.duck.BTMovementDistance;
 
 @Mixin(value = Boat.class, priority = 900)
 public class BoatSettingsMixin implements BTConfigurableBoat {
@@ -56,6 +57,7 @@ public class BoatSettingsMixin implements BTConfigurableBoat {
 	@ModifyVariable(method = "controlBoat", at = @At(value = "STORE", ordinal = 0), index = 1)
 	private float boattweaks$modifyForce(float f) {
 		BoatSettings settings = boattweaks$getSettings();
+		float distance = ((BTMovementDistance) this).boattweaks$getDistance();
 		if (status == Boat.Status.ON_LAND) {
 			if (inputUp) {
 				BTBoostingBoat boat = (BTBoostingBoat) this;
@@ -64,18 +66,19 @@ public class BoatSettingsMixin implements BTConfigurableBoat {
 			if (inputDown) {
 				f -= settings.backwardForce - 0.005F;
 			}
+			f = settings.getDegradedForce(f, distance);
 			if (inputLeft) {
-				deltaRotation += 1 - settings.turningForce;
+				deltaRotation += 1 - settings.getDegradedForce(settings.turningForce, distance);
 			}
 			if (inputRight) {
-				deltaRotation -= 1 - settings.turningForce;
+				deltaRotation -= 1 - settings.getDegradedForce(settings.turningForce, distance);
 			}
 		} else if (status == Boat.Status.IN_AIR) {
 			if (inputLeft) {
-				deltaRotation += 1 - settings.turningForceInAir;
+				deltaRotation += 1 - settings.getDegradedForce(settings.turningForceInAir, distance);
 			}
 			if (inputRight) {
-				deltaRotation -= 1 - settings.turningForceInAir;
+				deltaRotation -= 1 - settings.getDegradedForce(settings.turningForceInAir, distance);
 			}
 		}
 		return f;

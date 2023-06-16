@@ -44,6 +44,12 @@ public class BoatTweaksConfig {
 	@KiwiConfig.Range(min = 0)
 	@KiwiConfig.Path("wallHit.cooldown")
 	public static int wallHitCooldown = 10;
+	@KiwiConfig.Path("degradeOverDistance.forceLossPerMeter")
+	public static float degradeForceLossPerMeter = 0.0001F;
+	@KiwiConfig.Path("degradeOverDistance.forceLossStartFrom")
+	public static int degradeForceLossStartFrom = 5000;
+	@KiwiConfig.Path("degradeOverDistance.forceMaxLoss")
+	public static float degradeForceMaxLoss = 0F;
 
 	public static void refresh() {
 		BoatSettings.DEFAULT = BoatSettings.fromLocal();

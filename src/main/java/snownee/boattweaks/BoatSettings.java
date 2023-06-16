@@ -27,6 +27,9 @@ public class BoatSettings {
 	public float ejectingForce = 0F;
 	public float wallHitSpeedLoss = 0F;
 	public int wallHitCooldown = 0;
+	public float degradeForceLossPerMeter = 0F;
+	public int degradeForceLossStartFrom = 0;
+	public float degradeForceMaxLoss = 0F;
 
 	public static BoatSettings fromNetwork(FriendlyByteBuf buf) {
 		BoatSettings settings = new BoatSettings();
@@ -49,6 +52,9 @@ public class BoatSettings {
 		settings.ejectingForce = buf.readFloat();
 		settings.wallHitSpeedLoss = buf.readFloat();
 		settings.wallHitCooldown = buf.readVarInt();
+		settings.degradeForceLossPerMeter = buf.readFloat();
+		settings.degradeForceLossStartFrom = buf.readVarInt();
+		settings.degradeForceMaxLoss = buf.readFloat();
 		return settings;
 	}
 
@@ -75,6 +81,9 @@ public class BoatSettings {
 		settings.ejectingForce = tag.getFloat("ejectingForce");
 		settings.wallHitSpeedLoss = tag.getFloat("wallHitSpeedLoss");
 		settings.wallHitCooldown = tag.getInt("wallHitCooldown");
+		settings.degradeForceLossPerMeter = tag.getFloat("degradeForceLossPerMeter");
+		settings.degradeForceLossStartFrom = tag.getInt("degradeForceLossStartFrom");
+		settings.degradeForceMaxLoss = tag.getFloat("degradeForceMaxLoss");
 	}
 
 	public static BoatSettings fromLocal() {
@@ -100,6 +109,9 @@ public class BoatSettings {
 		settings.ejectingForce = BoatTweaksConfig.ejectingForce;
 		settings.wallHitSpeedLoss = BoatTweaksConfig.wallHitSpeedLoss;
 		settings.wallHitCooldown = BoatTweaksConfig.wallHitCooldown;
+		settings.degradeForceLossPerMeter = BoatTweaksConfig.degradeForceLossPerMeter;
+		settings.degradeForceLossStartFrom = BoatTweaksConfig.degradeForceLossStartFrom;
+		settings.degradeForceMaxLoss = BoatTweaksConfig.degradeForceMaxLoss;
 		return settings;
 	}
 
@@ -122,6 +134,9 @@ public class BoatSettings {
 		buf.writeFloat(ejectingForce);
 		buf.writeFloat(wallHitSpeedLoss);
 		buf.writeVarInt(wallHitCooldown);
+		buf.writeFloat(degradeForceLossPerMeter);
+		buf.writeVarInt(degradeForceLossStartFrom);
+		buf.writeFloat(degradeForceMaxLoss);
 	}
 
 	public CompoundTag toNBT() {
@@ -142,6 +157,9 @@ public class BoatSettings {
 		tag.putFloat("ejectingForce", ejectingForce);
 		tag.putFloat("wallHitSpeedLoss", wallHitSpeedLoss);
 		tag.putInt("wallHitCooldown", wallHitCooldown);
+		tag.putFloat("degradeForceLossPerMeter", degradeForceLossPerMeter);
+		tag.putInt("degradeForceLossStartFrom", degradeForceLossStartFrom);
+		tag.putFloat("degradeForceMaxLoss", degradeForceMaxLoss);
 		return tag;
 	}
 
@@ -165,6 +183,16 @@ public class BoatSettings {
 		settings.ejectingForce = ejectingForce;
 		settings.wallHitSpeedLoss = wallHitSpeedLoss;
 		settings.wallHitCooldown = wallHitCooldown;
+		settings.degradeForceLossPerMeter = degradeForceLossPerMeter;
+		settings.degradeForceLossStartFrom = degradeForceLossStartFrom;
+		settings.degradeForceMaxLoss = degradeForceMaxLoss;
 		return settings;
+	}
+
+	public float getDegradedForce(float force, float distance) {
+		if (degradeForceMaxLoss == 0 || degradeForceLossPerMeter == 0 || distance <= degradeForceLossStartFrom) {
+			return force;
+		}
+		return force * (1 - Math.min((distance - degradeForceLossStartFrom) * degradeForceLossPerMeter, degradeForceMaxLoss));
 	}
 }
