@@ -9,12 +9,12 @@ import net.minecraft.world.level.block.state.BlockState;
 public class SpecialBlockEventJS extends EntityEventJS {
 	public final Boat boat;
 	public final BlockState blockState;
-	public final BlockPos blockPos;
+	public final BlockPos pos;
 
-	public SpecialBlockEventJS(Boat boat, BlockState blockState, BlockPos blockPos) {
+	public SpecialBlockEventJS(Boat boat, BlockState blockState, BlockPos pos) {
 		this.boat = boat;
 		this.blockState = blockState;
-		this.blockPos = blockPos;
+		this.pos = pos;
 	}
 
 	@Override

@@ -10,8 +10,7 @@ import com.google.common.base.Preconditions;
 
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
-import snownee.boattweaks.BoatTweaks;
-import snownee.boattweaks.BoatTweaksConfig;
+import snownee.boattweaks.BoatSettings;
 import snownee.boattweaks.util.CommonProxy;
 import snownee.kiwi.network.KiwiPacket;
 import snownee.kiwi.network.PacketHandler;
@@ -20,14 +19,13 @@ import snownee.kiwi.network.PacketHandler;
 public class SSyncConfigPacket extends PacketHandler {
 	public static SSyncConfigPacket I;
 
-	public static void sync(ServerPlayer player, boolean respond, BoatTweaksConfig.Instance config) {
-		if (respond) {
-			BoatTweaks.LOGGER.info("Requesting config from {}", player.getGameProfile().getName());
-			CPingServerPacket.PENDING.add(player.getUUID());
-		}
+	public static void sync(ServerPlayer player, BoatSettings config) {
+//		if (respond) {
+//			BoatTweaks.LOGGER.info("Requesting config from {}", player.getGameProfile().getName());
+//		}
 		I.send(player, buf -> {
 			buf.writeUtf(CommonProxy.getVersion());
-			buf.writeBoolean(respond);
+//			buf.writeBoolean(respond);
 			config.toNetwork(buf);
 		});
 	}
@@ -35,13 +33,13 @@ public class SSyncConfigPacket extends PacketHandler {
 	@Override
 	public CompletableFuture<FriendlyByteBuf> receive(Function<Runnable, CompletableFuture<FriendlyByteBuf>> executor, FriendlyByteBuf buf, @Nullable ServerPlayer player) {
 		Preconditions.checkState(Objects.equals(buf.readUtf(), CommonProxy.getVersion()), "Version mismatch");
-		boolean respond = buf.readBoolean();
-		BoatTweaksConfig.Instance instance = BoatTweaksConfig.Instance.fromNetwork(buf);
+//		boolean respond = buf.readBoolean();
+		BoatSettings settings = BoatSettings.fromNetwork(buf);
 		return executor.apply(() -> {
-			BoatTweaks.CONFIG = instance;
-			if (respond) {
-				CPingServerPacket.ping();
-			}
+			BoatSettings.DEFAULT = settings;
+//			if (respond) {
+//				CPingServerPacket.ping();
+//			}
 		});
 	}
 }

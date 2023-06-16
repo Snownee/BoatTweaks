@@ -3,6 +3,7 @@ package snownee.boattweaks.compat.kubejs;
 import dev.latvian.mods.kubejs.KubeJSPlugin;
 import dev.latvian.mods.kubejs.script.BindingsEvent;
 import net.minecraft.core.Registry;
+import snownee.boattweaks.BoatSettings;
 import snownee.boattweaks.BoatTweaks;
 import snownee.boattweaks.BoatTweaksUtil;
 
@@ -20,6 +21,7 @@ public class BoatTweaksKubeJSPlugin extends KubeJSPlugin {
 	@Override
 	public void registerBindings(BindingsEvent event) {
 		event.add("BoatTweaks", BoatTweaksUtil.class);
+		event.add("BoatSettings", BoatSettings.class);
 	}
 
 	@Override

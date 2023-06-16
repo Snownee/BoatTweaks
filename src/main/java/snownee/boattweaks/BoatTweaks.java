@@ -1,7 +1,7 @@
 package snownee.boattweaks;
 
 import java.util.List;
-import java.util.Objects;
+import java.util.Optional;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -11,20 +11,22 @@ import com.google.common.collect.Lists;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenCustomHashMap;
 import net.minecraft.Util;
-import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializer;
+import net.minecraft.network.syncher.EntityDataSerializers;
+import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.vehicle.Boat;
 import net.minecraft.world.level.GameRules;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
-import snownee.boattweaks.duck.BTClientPacketListener;
 import snownee.boattweaks.network.SUpdateGhostModePacket;
 import snownee.kiwi.AbstractModule;
 import snownee.kiwi.KiwiGO;
 import snownee.kiwi.KiwiModule;
+import snownee.kiwi.loader.event.InitEvent;
 
 @KiwiModule
 public class BoatTweaks extends AbstractModule {
@@ -41,17 +43,16 @@ public class BoatTweaks extends AbstractModule {
 	}));
 	public static final Object2IntMap<Block> CUSTOM_SPECIAL_BLOCKS = new Object2IntOpenCustomHashMap<>(8, Util.identityStrategy());
 	public static final List<SpecialBlockEvent> SPECIAL_BLOCK_LISTENERS = Lists.newArrayList();
-	public static BoatTweaksConfig.Instance CONFIG = new BoatTweaksConfig.Instance();
-
-	public static boolean isGhostMode(Level level) {
-		if (level.isClientSide) {
-			return ((BTClientPacketListener) Objects.requireNonNull(Minecraft.getInstance().getConnection())).boattweaks$getGhostMode();
-		} else {
-			return level.getGameRules().getBoolean(GHOST_MODE);
-		}
-	}
+	public static final EntityDataSerializer<Optional<BoatSettings>> OPTIONAL_BOAT_SETTINGS = EntityDataSerializer.optional((buf, settings) -> settings.toNetwork(buf), BoatSettings::fromNetwork);
+	public static final EntityDataAccessor<Optional<BoatSettings>> DATA_ID_BOAT_SETTINGS = SynchedEntityData.defineId(Boat.class, OPTIONAL_BOAT_SETTINGS);
+	public static final EntityDataAccessor<Float> DATA_ID_MOVEMENT_DISTANCE = SynchedEntityData.defineId(Boat.class, EntityDataSerializers.FLOAT);
 
 	public static void postSpecialBlockEvent(Boat boat, BlockState blockState, BlockPos blockPos) {
 		SPECIAL_BLOCK_LISTENERS.forEach(listener -> listener.on(boat, blockState, blockPos));
+	}
+
+	@Override
+	protected void init(InitEvent event) {
+		event.enqueueWork(() -> EntityDataSerializers.registerSerializer(OPTIONAL_BOAT_SETTINGS));
 	}
 }

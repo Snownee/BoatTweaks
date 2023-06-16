@@ -18,7 +18,6 @@ import snownee.kiwi.network.PacketHandler;
 
 @KiwiPacket(value = "ping_server", dir = KiwiPacket.Direction.PLAY_TO_SERVER)
 public class CPingServerPacket extends PacketHandler {
-	public static final Set<UUID> PENDING = Sets.newHashSet();
 	public static CPingServerPacket I;
 
 	public static void ping() {
@@ -29,8 +28,7 @@ public class CPingServerPacket extends PacketHandler {
 	@Override
 	public CompletableFuture<FriendlyByteBuf> receive(Function<Runnable, CompletableFuture<FriendlyByteBuf>> executor, FriendlyByteBuf buf, @Nullable ServerPlayer player) {
 		return executor.apply(() -> {
-			BoatTweaks.LOGGER.info("Received config from {}", player.getGameProfile().getName());
-			PENDING.remove(Objects.requireNonNull(player).getUUID());
+			BoatTweaks.LOGGER.info("Received config from {}", Objects.requireNonNull(player).getGameProfile().getName());
 		});
 	}
 }

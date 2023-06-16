@@ -5,6 +5,7 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.loader.api.FabricLoader;
+import snownee.boattweaks.BoatSettings;
 import snownee.boattweaks.BoatTweaks;
 import snownee.boattweaks.BoatTweaksConfig;
 import snownee.boattweaks.network.SSyncConfigPacket;
@@ -31,13 +32,13 @@ public class CommonProxy implements ModInitializer {
 			BoatTweaksConfig.refresh();
 		});
 		ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
-			SSyncConfigPacket.sync(handler.player, true, BoatTweaks.CONFIG);
+			SSyncConfigPacket.sync(handler.player, BoatSettings.DEFAULT);
 			if (handler.player.level.getGameRules().getBoolean(BoatTweaks.GHOST_MODE)) {
 				SUpdateGhostModePacket.sync(handler.player, true);
 			}
 		});
 		ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> {
-			BoatTweaks.CONFIG = new BoatTweaksConfig.Instance();
+			BoatSettings.DEFAULT = new BoatSettings();
 		});
 	}
 }

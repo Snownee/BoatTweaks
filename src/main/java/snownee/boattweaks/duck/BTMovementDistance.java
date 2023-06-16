@@ -1,7 +1,7 @@
 package snownee.boattweaks.duck;
 
 public interface BTMovementDistance {
-	double boattweaks$getDistance();
+	float boattweaks$getDistance();
 
-	void boattweaks$resetDistance();
+	void boattweaks$setDistance(float distance);
 }
