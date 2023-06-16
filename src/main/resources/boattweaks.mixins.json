@@ -8,6 +8,7 @@
     "BoatAutoRemoveMixin",
     "BoatGhostModeMixin",
     "BoatMixin",
+    "BoatMovementDistanceMixin",
     "BoatSpecialBlockMixin",
     "ServerPlayerMixin"
   ],
