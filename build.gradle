@@ -62,7 +62,7 @@ dependencies {
         exclude(group: "net.fabricmc.fabric-api")
     }
     modImplementation "com.terraformersmc:modmenu:${project.modmenu_version}"
-    
+
     modImplementation "dev.latvian.mods:kubejs-fabric:1902.6.0-build.119"
 }
 
@@ -142,5 +142,6 @@ modrinth {
         // The scope can be `required`, `optional`, `incompatible`, or `embedded`
         // The type can either be `project` or `version`
         required.project "kiwi"
+        optional.project "kubejs"
     }
 }
