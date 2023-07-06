@@ -63,7 +63,7 @@ dependencies {
     }
     modImplementation "com.terraformersmc:modmenu:${project.modmenu_version}"
 
-    modImplementation "dev.latvian.mods:kubejs-fabric:1902.6.0-build.119"
+    modImplementation "dev.latvian.mods:kubejs-fabric:${project.kubejs_version}"
 }
 
 loom {
