@@ -88,30 +88,30 @@ public class BoatSettings {
 
 	public static BoatSettings fromLocal() {
 		BoatSettings settings = new BoatSettings();
-		settings.frictionOverrides = new Object2FloatOpenHashMap<>(BoatTweaksConfig.frictionOverrides.size());
-		BoatTweaksConfig.frictionOverrides.forEach((k, v) -> {
+		settings.frictionOverrides = new Object2FloatOpenHashMap<>(BoatTweaksCommonConfig.frictionOverrides.size());
+		BoatTweaksCommonConfig.frictionOverrides.forEach((k, v) -> {
 			Block block = Registry.BLOCK.get(ResourceLocation.tryParse(k));
 			if (block != Blocks.AIR) {
 				settings.frictionOverrides.put(block, v.floatValue());
 			}
 		});
 		settings.frictionOverrides = Object2FloatMaps.unmodifiable(settings.frictionOverrides);
-		settings.forwardForce = BoatTweaksConfig.forwardForce;
-		settings.backwardForce = BoatTweaksConfig.backwardForce;
-		settings.turningForce = BoatTweaksConfig.turningForce;
-		settings.turningForceInAir = BoatTweaksConfig.turningForceInAir;
-		settings.stepUpHeight = BoatTweaksConfig.stepUpHeight;
-		settings.outOfControlTicks = BoatTweaksConfig.outOfControlTicks;
-		settings.boostingBlock = Registry.BLOCK.get(ResourceLocation.tryParse(BoatTweaksConfig.boostingBlock));
-		settings.boostingTicks = BoatTweaksConfig.boostingTicks;
-		settings.boostingForce = BoatTweaksConfig.boostingForce;
-		settings.ejectingBlock = Registry.BLOCK.get(ResourceLocation.tryParse(BoatTweaksConfig.ejectingBlock));
-		settings.ejectingForce = BoatTweaksConfig.ejectingForce;
-		settings.wallHitSpeedLoss = BoatTweaksConfig.wallHitSpeedLoss;
-		settings.wallHitCooldown = BoatTweaksConfig.wallHitCooldown;
-		settings.degradeForceLossPerMeter = BoatTweaksConfig.degradeForceLossPerMeter;
-		settings.degradeForceLossStartFrom = BoatTweaksConfig.degradeForceLossStartFrom;
-		settings.degradeForceMaxLoss = BoatTweaksConfig.degradeForceMaxLoss;
+		settings.forwardForce = BoatTweaksCommonConfig.forwardForce;
+		settings.backwardForce = BoatTweaksCommonConfig.backwardForce;
+		settings.turningForce = BoatTweaksCommonConfig.turningForce;
+		settings.turningForceInAir = BoatTweaksCommonConfig.turningForceInAir;
+		settings.stepUpHeight = BoatTweaksCommonConfig.stepUpHeight;
+		settings.outOfControlTicks = BoatTweaksCommonConfig.outOfControlTicks;
+		settings.boostingBlock = Registry.BLOCK.get(ResourceLocation.tryParse(BoatTweaksCommonConfig.boostingBlock));
+		settings.boostingTicks = BoatTweaksCommonConfig.boostingTicks;
+		settings.boostingForce = BoatTweaksCommonConfig.boostingForce;
+		settings.ejectingBlock = Registry.BLOCK.get(ResourceLocation.tryParse(BoatTweaksCommonConfig.ejectingBlock));
+		settings.ejectingForce = BoatTweaksCommonConfig.ejectingForce;
+		settings.wallHitSpeedLoss = BoatTweaksCommonConfig.wallHitSpeedLoss;
+		settings.wallHitCooldown = BoatTweaksCommonConfig.wallHitCooldown;
+		settings.degradeForceLossPerMeter = BoatTweaksCommonConfig.degradeForceLossPerMeter;
+		settings.degradeForceLossStartFrom = BoatTweaksCommonConfig.degradeForceLossStartFrom;
+		settings.degradeForceMaxLoss = BoatTweaksCommonConfig.degradeForceMaxLoss;
 		return settings;
 	}
 

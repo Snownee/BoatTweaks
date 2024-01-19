@@ -9,6 +9,7 @@ import org.jetbrains.annotations.Nullable;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import snownee.boattweaks.BoatTweaks;
+import snownee.boattweaks.duck.BTServerPlayer;
 import snownee.kiwi.network.KiwiPacket;
 import snownee.kiwi.network.PacketHandler;
 
@@ -25,6 +26,7 @@ public class CPingServerPacket extends PacketHandler {
 	public CompletableFuture<FriendlyByteBuf> receive(Function<Runnable, CompletableFuture<FriendlyByteBuf>> executor, FriendlyByteBuf buf, @Nullable ServerPlayer player) {
 		return executor.apply(() -> {
 			BoatTweaks.LOGGER.info("Received config from {}", Objects.requireNonNull(player).getGameProfile().getName());
+			((BTServerPlayer) player).boattweaks$setVerified(true);
 		});
 	}
 }

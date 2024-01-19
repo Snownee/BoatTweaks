@@ -54,4 +54,8 @@ public class BoatTweaksUtil {
 			return level.getGameRules().getBoolean(BoatTweaks.GHOST_MODE);
 		}
 	}
+
+	public static boolean isDefaultSettings(Boat boat) {
+		return getBoatSettings(boat) == BoatSettings.DEFAULT;
+	}
 }

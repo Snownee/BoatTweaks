@@ -7,9 +7,12 @@
   "mixins": [
     "BoatAutoRemoveMixin",
     "BoatGhostModeMixin",
-    "BoatSettingsMixin",
     "BoatMovementDistanceMixin",
-    "BoatSpecialBlockMixin"
+    "BoatSettingsEntityMixin",
+    "BoatSettingsMixin",
+    "BoatSpecialBlockMixin",
+    "BoatVerificationMixin",
+    "ServerPlayerMixin"
   ],
   "client": [
     "client.ClientPacketListenerMixin",

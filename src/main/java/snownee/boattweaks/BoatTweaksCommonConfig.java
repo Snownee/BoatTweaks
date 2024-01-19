@@ -5,7 +5,7 @@ import java.util.Map;
 import snownee.kiwi.config.KiwiConfig;
 
 @KiwiConfig
-public class BoatTweaksConfig {
+public class BoatTweaksCommonConfig {
 
 	public static Map<String, Double> frictionOverrides = Map.of(
 			"blue_ice", 0.95,

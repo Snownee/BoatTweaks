@@ -16,6 +16,9 @@
   "entrypoints": {
     "main": [
       "snownee.boattweaks.util.CommonProxy"
+    ],
+    "client": [
+      "snownee.boattweaks.util.ClientProxy"
     ]
   },
   "mixins": [

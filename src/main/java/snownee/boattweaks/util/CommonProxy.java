@@ -1,14 +1,15 @@
 package snownee.boattweaks.util;
 
 import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
+import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import snownee.boattweaks.BoatSettings;
 import snownee.boattweaks.BoatTweaks;
-import snownee.boattweaks.BoatTweaksConfig;
-import snownee.boattweaks.network.SSyncConfigPacket;
+import snownee.boattweaks.BoatTweaksCommonConfig;
+import snownee.boattweaks.duck.BTServerPlayer;
+import snownee.boattweaks.network.SSyncSettingsPacket;
 import snownee.boattweaks.network.SUpdateGhostModePacket;
 import snownee.kiwi.Mod;
 import snownee.kiwi.config.KiwiConfigManager;
@@ -27,18 +28,19 @@ public class CommonProxy implements ModInitializer {
 		ServerLifecycleEvents.SERVER_STARTING.register($ -> {
 			version = FabricLoader.getInstance().getModContainer(BoatTweaks.ID).map(container -> container.getMetadata().getVersion().getFriendlyString()).orElseThrow();
 			if (!$.isDedicatedServer()) {
-				KiwiConfigManager.getHandler(BoatTweaksConfig.class).refresh();
+				KiwiConfigManager.getHandler(BoatTweaksCommonConfig.class).refresh();
 			}
-			BoatTweaksConfig.refresh();
+			BoatTweaksCommonConfig.refresh();
 		});
 		ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
-			SSyncConfigPacket.sync(handler.player, BoatSettings.DEFAULT);
+			SSyncSettingsPacket.sync(handler.player, BoatSettings.DEFAULT, Integer.MIN_VALUE);
 			if (handler.player.level.getGameRules().getBoolean(BoatTweaks.GHOST_MODE)) {
 				SUpdateGhostModePacket.sync(handler.player, true);
 			}
 		});
-		ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> {
-			BoatSettings.DEFAULT = new BoatSettings();
+		ServerPlayerEvents.COPY_FROM.register((oldPlayer, newPlayer, alive) -> {
+			boolean verified = ((BTServerPlayer) oldPlayer).boattweaks$isVerified();
+			((BTServerPlayer) newPlayer).boattweaks$setVerified(verified);
 		});
 	}
 }

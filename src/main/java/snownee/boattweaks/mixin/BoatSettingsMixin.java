@@ -1,7 +1,5 @@
 package snownee.boattweaks.mixin;
 
-import java.util.Optional;
-
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -18,7 +16,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.vehicle.Boat;
 import net.minecraft.world.level.block.Block;
 import snownee.boattweaks.BoatSettings;
-import snownee.boattweaks.BoatTweaks;
 import snownee.boattweaks.duck.BTBoostingBoat;
 import snownee.boattweaks.duck.BTConfigurableBoat;
 import snownee.boattweaks.duck.BTMovementDistance;
@@ -40,6 +37,9 @@ public class BoatSettingsMixin implements BTConfigurableBoat {
 	private float deltaRotation;
 	@Unique
 	private int wallHitCd;
+	@Unique
+	@Nullable
+	private BoatSettings settings;
 
 	@Inject(method = "<init>(Lnet/minecraft/world/entity/EntityType;Lnet/minecraft/world/level/Level;)V", at = @At("RETURN"))
 	private void init(CallbackInfo ci) {
@@ -106,10 +106,9 @@ public class BoatSettingsMixin implements BTConfigurableBoat {
 
 	@Inject(method = "addAdditionalSaveData", at = @At("TAIL"))
 	private void addAdditionalSaveData(CompoundTag compoundTag, CallbackInfo ci) {
-		Boat boat = (Boat) (Object) this;
-		boat.getEntityData().get(BoatTweaks.DATA_ID_BOAT_SETTINGS).ifPresent(settings -> {
+		if (settings != null) {
 			compoundTag.put("BoatTweaksSettings", settings.toNBT());
-		});
+		}
 	}
 
 	@Inject(method = "readAdditionalSaveData", at = @At("TAIL"))
@@ -121,22 +120,18 @@ public class BoatSettingsMixin implements BTConfigurableBoat {
 		}
 	}
 
-	@Inject(method = "defineSynchedData", at = @At("TAIL"))
-	private void defineSynchedData(CallbackInfo ci) {
-		Boat boat = (Boat) (Object) this;
-		boat.getEntityData().define(BoatTweaks.DATA_ID_BOAT_SETTINGS, Optional.empty());
-	}
-
 	@Override
 	public BoatSettings boattweaks$getSettings() {
-		Boat boat = (Boat) (Object) this;
-		return boat.getEntityData().get(BoatTweaks.DATA_ID_BOAT_SETTINGS).orElse(BoatSettings.DEFAULT);
+		if (settings == null) {
+			return BoatSettings.DEFAULT;
+		}
+		return settings;
 	}
 
 	@Override
 	public void boattweaks$setSettings(@Nullable BoatSettings settings) {
+		this.settings = settings;
 		Boat boat = (Boat) (Object) this;
-		boat.getEntityData().set(BoatTweaks.DATA_ID_BOAT_SETTINGS, Optional.ofNullable(settings));
 		boat.maxUpStep = boattweaks$getSettings().stepUpHeight;
 	}
 

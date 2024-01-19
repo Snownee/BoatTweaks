@@ -44,7 +44,7 @@ public abstract class BoatSpecialBlockMixin implements BTBoostingBoat {
 	private void getGroundFriction(CallbackInfoReturnable<Float> cir, AABB aABB, AABB aABB2, int i, int j, int k, int l, int m, int n, VoxelShape voxelShape, float f, int o, BlockPos.MutableBlockPos pos, int p, int q, int r, int s, BlockState blockState) {
 		Boat boat = (Boat) (Object) this;
 		if (blockState.is(BoatSettings.DEFAULT.ejectingBlock)) {
-			if (eject == 0) {
+			if (this.eject == 0) {
 				boat.playSound(BoatTweaks.EJECT.get());
 			}
 			int eject = 1;
@@ -58,6 +58,7 @@ public abstract class BoatSpecialBlockMixin implements BTBoostingBoat {
 				}
 				eject++;
 			}
+			this.eject = Math.max(this.eject, eject);
 			pos.setY(y);
 		}
 		if (boostTicks < BoatSettings.DEFAULT.boostingTicks && blockState.is(BoatSettings.DEFAULT.boostingBlock)) {
