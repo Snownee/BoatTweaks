@@ -23,6 +23,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import snownee.boattweaks.BoatSettings;
 import snownee.boattweaks.BoatTweaks;
 import snownee.boattweaks.duck.BTBoostingBoat;
+import snownee.boattweaks.duck.BTConfigurableBoat;
 
 @Mixin(Boat.class)
 public abstract class BoatSpecialBlockMixin implements BTBoostingBoat {
@@ -43,7 +44,8 @@ public abstract class BoatSpecialBlockMixin implements BTBoostingBoat {
 	)
 	private void getGroundFriction(CallbackInfoReturnable<Float> cir, AABB aABB, AABB aABB2, int i, int j, int k, int l, int m, int n, VoxelShape voxelShape, float f, int o, BlockPos.MutableBlockPos pos, int p, int q, int r, int s, BlockState blockState) {
 		Boat boat = (Boat) (Object) this;
-		if (blockState.is(BoatSettings.DEFAULT.ejectingBlock)) {
+		BoatSettings settings = ((BTConfigurableBoat) boat).boattweaks$getSettings();
+		if (blockState.is(settings.ejectingBlock)) {
 			if (this.eject == 0) {
 				boat.playSound(BoatTweaks.EJECT.get());
 			}
@@ -53,7 +55,7 @@ public abstract class BoatSpecialBlockMixin implements BTBoostingBoat {
 			while (true) {
 				pos.setY(y - eject);
 				blockState1 = boat.level.getBlockState(pos);
-				if (!blockState1.is(BoatSettings.DEFAULT.ejectingBlock)) {
+				if (!blockState1.is(settings.ejectingBlock)) {
 					break;
 				}
 				eject++;
@@ -61,11 +63,11 @@ public abstract class BoatSpecialBlockMixin implements BTBoostingBoat {
 			this.eject = Math.max(this.eject, eject);
 			pos.setY(y);
 		}
-		if (boostTicks < BoatSettings.DEFAULT.boostingTicks && blockState.is(BoatSettings.DEFAULT.boostingBlock)) {
-			if (BoatSettings.DEFAULT.boostingTicks - boostTicks > 10) {
+		if (boostTicks < settings.boostingTicks && blockState.is(settings.boostingBlock)) {
+			if (settings.boostingTicks - boostTicks > 10) {
 				boat.playSound(BoatTweaks.BOOST.get());
 			}
-			boostTicks = BoatSettings.DEFAULT.boostingTicks;
+			boostTicks = settings.boostingTicks;
 		}
 		Block block = blockState.getBlock();
 		int cooldown = BoatTweaks.CUSTOM_SPECIAL_BLOCKS.getInt(block);
@@ -78,12 +80,13 @@ public abstract class BoatSpecialBlockMixin implements BTBoostingBoat {
 	@Inject(method = "tick", at = @At("TAIL"))
 	private void tick(CallbackInfo ci) {
 		Boat boat = (Boat) (Object) this;
+		BoatSettings settings = ((BTConfigurableBoat) boat).boattweaks$getSettings();
 		if (eject > 0) {
 			float force;
 			if (eject == 1) {
-				force = BoatSettings.DEFAULT.ejectingForce;
+				force = settings.ejectingForce;
 			} else {
-				force = BoatSettings.DEFAULT.ejectingForce * (float) (Math.pow(1.1, eject - 1));
+				force = settings.ejectingForce * (float) (Math.pow(1.1, eject - 1));
 			}
 			eject = 0;
 			boat.setDeltaMovement(boat.getDeltaMovement().with(Direction.Axis.Y, force));
@@ -111,6 +114,6 @@ public abstract class BoatSpecialBlockMixin implements BTBoostingBoat {
 
 	@Override
 	public float boattweaks$getExtraForwardForce() {
-		return boostTicks > 0 ? BoatSettings.DEFAULT.boostingForce : 0;
+		return boostTicks > 0 ? ((BTConfigurableBoat) this).boattweaks$getSettings().boostingForce : 0;
 	}
 }
