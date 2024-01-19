@@ -3,10 +3,10 @@ package snownee.boattweaks;
 import java.util.List;
 import java.util.Optional;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 import com.google.common.collect.Lists;
+import com.mojang.logging.LogUtils;
 
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenCustomHashMap;
@@ -32,7 +32,7 @@ import snownee.kiwi.loader.event.InitEvent;
 public class BoatTweaks extends AbstractModule {
 
 	public static final String ID = "boattweaks";
-	public static final Logger LOGGER = LogManager.getLogger("BoatTweaks");
+	public static final Logger LOGGER = LogUtils.getLogger();
 	public static final KiwiGO<SoundEvent> BOOST = go(() -> new SoundEvent(new ResourceLocation(ID, "boost")));
 	public static final KiwiGO<SoundEvent> EJECT = go(() -> new SoundEvent(new ResourceLocation(ID, "eject")));
 	public static final GameRules.Key<GameRules.BooleanValue> AUTO_REMOVE_BOAT = GameRules.register(ID + ":autoRemoveBoat", GameRules.Category.MISC, GameRules.BooleanValue.create(false));
