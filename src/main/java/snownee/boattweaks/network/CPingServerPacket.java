@@ -1,14 +1,10 @@
 package snownee.boattweaks.network;
 
 import java.util.Objects;
-import java.util.Set;
-import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 
 import org.jetbrains.annotations.Nullable;
-
-import com.google.common.collect.Sets;
 
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;

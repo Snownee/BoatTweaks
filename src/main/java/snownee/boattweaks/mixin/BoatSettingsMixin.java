@@ -5,6 +5,7 @@ import java.util.Optional;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Constant;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -37,10 +38,11 @@ public class BoatSettingsMixin implements BTConfigurableBoat {
 	private boolean inputRight;
 	@Shadow
 	private float deltaRotation;
-	private int boattweaks$wallHitCd;
+	@Unique
+	private int wallHitCd;
 
 	@Inject(method = "<init>(Lnet/minecraft/world/entity/EntityType;Lnet/minecraft/world/level/Level;)V", at = @At("RETURN"))
-	private void boattweaks$init(CallbackInfo ci) {
+	private void init(CallbackInfo ci) {
 		Boat boat = (Boat) (Object) this;
 		boat.maxUpStep = BoatSettings.DEFAULT.stepUpHeight;
 	}
@@ -50,12 +52,12 @@ public class BoatSettingsMixin implements BTConfigurableBoat {
 			value = "INVOKE", target = "Lnet/minecraft/world/level/block/Block;getFriction()F"
 	)
 	)
-	private float boattweaks$getGroundFriction(Block block) {
+	private float getGroundFriction(Block block) {
 		return boattweaks$getSettings().getFriction(block);
 	}
 
 	@ModifyVariable(method = "controlBoat", at = @At(value = "STORE", ordinal = 0), index = 1)
-	private float boattweaks$modifyForce(float f) {
+	private float modifyForce(float f) {
 		BoatSettings settings = boattweaks$getSettings();
 		float distance = ((BTMovementDistance) this).boattweaks$getDistance();
 		if (status == Boat.Status.ON_LAND) {
@@ -85,25 +87,25 @@ public class BoatSettingsMixin implements BTConfigurableBoat {
 	}
 
 	@Inject(method = "tick", at = @At("HEAD"))
-	private void boattweaks$tick(CallbackInfo ci) {
+	private void tick(CallbackInfo ci) {
 		Boat boat = (Boat) (Object) this;
-		if (boattweaks$wallHitCd > 0) {
-			boattweaks$wallHitCd--;
+		if (wallHitCd > 0) {
+			wallHitCd--;
 		} else if (boat.horizontalCollision) {
 			BoatSettings settings = boattweaks$getSettings();
-			boattweaks$wallHitCd = settings.wallHitCooldown;
+			wallHitCd = settings.wallHitCooldown;
 			float scale = 1 - settings.wallHitSpeedLoss;
 			boat.setDeltaMovement(boat.getDeltaMovement().multiply(scale, 1, scale));
 		}
 	}
 
 	@ModifyConstant(method = "tick", constant = @Constant(floatValue = 60F))
-	private float boattweaks$modifyTimeOutTicks(float f) {
+	private float modifyTimeOutTicks(float f) {
 		return boattweaks$getSettings().outOfControlTicks;
 	}
 
 	@Inject(method = "addAdditionalSaveData", at = @At("TAIL"))
-	private void boattweaks$addAdditionalSaveData(CompoundTag compoundTag, CallbackInfo ci) {
+	private void addAdditionalSaveData(CompoundTag compoundTag, CallbackInfo ci) {
 		Boat boat = (Boat) (Object) this;
 		boat.getEntityData().get(BoatTweaks.DATA_ID_BOAT_SETTINGS).ifPresent(settings -> {
 			compoundTag.put("BoatTweaksSettings", settings.toNBT());
@@ -111,7 +113,7 @@ public class BoatSettingsMixin implements BTConfigurableBoat {
 	}
 
 	@Inject(method = "readAdditionalSaveData", at = @At("TAIL"))
-	private void boattweaks$readAdditionalSaveData(CompoundTag compoundTag, CallbackInfo ci) {
+	private void readAdditionalSaveData(CompoundTag compoundTag, CallbackInfo ci) {
 		if (compoundTag.contains("BoatTweaksSettings")) {
 			BoatSettings settings = new BoatSettings();
 			BoatSettings.fromNBT(compoundTag.getCompound("BoatTweaksSettings"), settings);
@@ -120,7 +122,7 @@ public class BoatSettingsMixin implements BTConfigurableBoat {
 	}
 
 	@Inject(method = "defineSynchedData", at = @At("TAIL"))
-	private void boattweaks$defineSynchedData(CallbackInfo ci) {
+	private void defineSynchedData(CallbackInfo ci) {
 		Boat boat = (Boat) (Object) this;
 		boat.getEntityData().define(BoatTweaks.DATA_ID_BOAT_SETTINGS, Optional.empty());
 	}

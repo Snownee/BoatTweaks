@@ -14,14 +14,14 @@ import snownee.boattweaks.BoatTweaksUtil;
 public class BoatGhostModeMixin {
 
 	@Inject(method = "push", at = @At("HEAD"), cancellable = true)
-	private void boattweaks$push(Entity entity, CallbackInfo ci) {
+	private void push(Entity entity, CallbackInfo ci) {
 		if (BoatTweaksUtil.isGhostMode(entity.level)) {
 			ci.cancel();
 		}
 	}
 
 	@Inject(method = "canCollideWith", at = @At("HEAD"), cancellable = true)
-	private void boattweaks$canCollideWith(Entity entity, CallbackInfoReturnable<Boolean> cir) {
+	private void canCollideWith(Entity entity, CallbackInfoReturnable<Boolean> cir) {
 		if (BoatTweaksUtil.isGhostMode(entity.level) && entity instanceof Boat) {
 			cir.setReturnValue(false);
 		}

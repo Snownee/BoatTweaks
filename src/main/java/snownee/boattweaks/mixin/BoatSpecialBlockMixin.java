@@ -4,6 +4,7 @@ import java.util.IdentityHashMap;
 import java.util.Map;
 
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -26,20 +27,24 @@ import snownee.boattweaks.duck.BTBoostingBoat;
 @Mixin(Boat.class)
 public abstract class BoatSpecialBlockMixin implements BTBoostingBoat {
 
-	private final Object2IntOpenCustomHashMap<Block> boattweaks$specialBlockCooldowns = new Object2IntOpenCustomHashMap<>(Math.min(BoatTweaks.CUSTOM_SPECIAL_BLOCKS.size(), 10), Util.identityStrategy());
-	private final Map<Block, BlockPos> boattweaks$specialBlockRecords = new IdentityHashMap<>(Math.min(BoatTweaks.CUSTOM_SPECIAL_BLOCKS.size(), 10));
-	private int boattweaks$eject;
-	private int boattweaks$boostTicks;
+	@Unique
+	private final Object2IntOpenCustomHashMap<Block> specialBlockCooldowns = new Object2IntOpenCustomHashMap<>(Math.min(BoatTweaks.CUSTOM_SPECIAL_BLOCKS.size(), 10), Util.identityStrategy());
+	@Unique
+	private final Map<Block, BlockPos> specialBlockRecords = new IdentityHashMap<>(Math.min(BoatTweaks.CUSTOM_SPECIAL_BLOCKS.size(), 10));
+	@Unique
+	private int eject;
+	@Unique
+	private int boostTicks;
 
 	@Inject(
 			method = "getGroundFriction", at = @At(
 			value = "INVOKE", target = "Lnet/minecraft/world/level/block/state/BlockState;getBlock()Lnet/minecraft/world/level/block/Block;", ordinal = 1
 	), locals = LocalCapture.CAPTURE_FAILHARD
 	)
-	private void boattweaks$getGroundFriction(CallbackInfoReturnable<Float> cir, AABB aABB, AABB aABB2, int i, int j, int k, int l, int m, int n, VoxelShape voxelShape, float f, int o, BlockPos.MutableBlockPos pos, int p, int q, int r, int s, BlockState blockState) {
+	private void getGroundFriction(CallbackInfoReturnable<Float> cir, AABB aABB, AABB aABB2, int i, int j, int k, int l, int m, int n, VoxelShape voxelShape, float f, int o, BlockPos.MutableBlockPos pos, int p, int q, int r, int s, BlockState blockState) {
 		Boat boat = (Boat) (Object) this;
 		if (blockState.is(BoatSettings.DEFAULT.ejectingBlock)) {
-			if (boattweaks$eject == 0) {
+			if (eject == 0) {
 				boat.playSound(BoatTweaks.EJECT.get());
 			}
 			int eject = 1;
@@ -53,44 +58,43 @@ public abstract class BoatSpecialBlockMixin implements BTBoostingBoat {
 				}
 				eject++;
 			}
-			boattweaks$eject = Math.max(boattweaks$eject, eject);
 			pos.setY(y);
 		}
-		if (boattweaks$boostTicks < BoatSettings.DEFAULT.boostingTicks && blockState.is(BoatSettings.DEFAULT.boostingBlock)) {
-			if (BoatSettings.DEFAULT.boostingTicks - boattweaks$boostTicks > 10) {
+		if (boostTicks < BoatSettings.DEFAULT.boostingTicks && blockState.is(BoatSettings.DEFAULT.boostingBlock)) {
+			if (BoatSettings.DEFAULT.boostingTicks - boostTicks > 10) {
 				boat.playSound(BoatTweaks.BOOST.get());
 			}
-			boattweaks$boostTicks = BoatSettings.DEFAULT.boostingTicks;
+			boostTicks = BoatSettings.DEFAULT.boostingTicks;
 		}
 		Block block = blockState.getBlock();
 		int cooldown = BoatTweaks.CUSTOM_SPECIAL_BLOCKS.getInt(block);
-		if (cooldown > 0 && boattweaks$specialBlockCooldowns.getInt(block) == 0) {
-			boattweaks$specialBlockCooldowns.put(block, cooldown);
-			boattweaks$specialBlockRecords.put(block, pos.immutable());
+		if (cooldown > 0 && specialBlockCooldowns.getInt(block) == 0) {
+			specialBlockCooldowns.put(block, cooldown);
+			specialBlockRecords.put(block, pos.immutable());
 		}
 	}
 
 	@Inject(method = "tick", at = @At("TAIL"))
-	private void boattweaks$tick(CallbackInfo ci) {
+	private void tick(CallbackInfo ci) {
 		Boat boat = (Boat) (Object) this;
-		if (boattweaks$eject > 0) {
+		if (eject > 0) {
 			float force;
-			if (boattweaks$eject == 1) {
+			if (eject == 1) {
 				force = BoatSettings.DEFAULT.ejectingForce;
 			} else {
-				force = BoatSettings.DEFAULT.ejectingForce * (float) (Math.pow(1.1, boattweaks$eject - 1));
+				force = BoatSettings.DEFAULT.ejectingForce * (float) (Math.pow(1.1, eject - 1));
 			}
-			boattweaks$eject = 0;
+			eject = 0;
 			boat.setDeltaMovement(boat.getDeltaMovement().with(Direction.Axis.Y, force));
 		}
-		if (boattweaks$boostTicks > 0) {
-			boattweaks$boostTicks--;
+		if (boostTicks > 0) {
+			boostTicks--;
 		}
-		boattweaks$specialBlockCooldowns.object2IntEntrySet().fastIterator().forEachRemaining(entry -> {
+		specialBlockCooldowns.object2IntEntrySet().fastIterator().forEachRemaining(entry -> {
 			Block block = entry.getKey();
 			int cooldown = entry.getIntValue();
 			if (BoatTweaks.CUSTOM_SPECIAL_BLOCKS.getInt(block) == cooldown) {
-				BlockPos pos = boattweaks$specialBlockRecords.get(block);
+				BlockPos pos = specialBlockRecords.get(block);
 				if (pos != null) {
 					BlockState blockState = boat.level.getBlockState(pos);
 					if (blockState.is(block)) {
@@ -106,6 +110,6 @@ public abstract class BoatSpecialBlockMixin implements BTBoostingBoat {
 
 	@Override
 	public float boattweaks$getExtraForwardForce() {
-		return boattweaks$boostTicks > 0 ? BoatSettings.DEFAULT.boostingForce : 0;
+		return boostTicks > 0 ? BoatSettings.DEFAULT.boostingForce : 0;
 	}
 }

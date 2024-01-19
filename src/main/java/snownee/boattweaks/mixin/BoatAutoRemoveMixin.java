@@ -1,6 +1,7 @@
 package snownee.boattweaks.mixin;
 
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -14,20 +15,21 @@ import snownee.boattweaks.BoatTweaks;
 @Mixin(Boat.class)
 public class BoatAutoRemoveMixin {
 
+	@Unique
 	private long lastTimeRiding;
 
 	@Inject(method = "addAdditionalSaveData", at = @At("HEAD"))
-	private void boattweaks$addAdditionalSaveData(CompoundTag compoundTag, CallbackInfo ci) {
+	private void addAdditionalSaveData(CompoundTag compoundTag, CallbackInfo ci) {
 		compoundTag.putLong("LastTimeRiding", lastTimeRiding);
 	}
 
 	@Inject(method = "readAdditionalSaveData", at = @At("HEAD"))
-	private void boattweaks$readAdditionalSaveData(CompoundTag compoundTag, CallbackInfo ci) {
+	private void readAdditionalSaveData(CompoundTag compoundTag, CallbackInfo ci) {
 		lastTimeRiding = compoundTag.getLong("LastTimeRiding");
 	}
 
 	@Inject(method = "tick", at = @At("HEAD"), cancellable = true)
-	private void boattweaks$tick(CallbackInfo ci) {
+	private void tick(CallbackInfo ci) {
 		Boat boat = (Boat) (Object) this;
 		if (boat.level.isClientSide || boat.getType() == EntityType.CHEST_BOAT) {
 			return;
