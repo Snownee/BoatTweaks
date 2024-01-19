@@ -24,9 +24,9 @@ public class CommonProxy implements ModInitializer {
 
 	@Override
 	public void onInitialize() {
+		version = FabricLoader.getInstance().getModContainer(BoatTweaks.ID).map(container -> container.getMetadata().getVersion().getFriendlyString()).orElseThrow();
 		// Currently in 1.19.2, the serverInit method has a bug that it will not be called for integrated server.
 		ServerLifecycleEvents.SERVER_STARTING.register($ -> {
-			version = FabricLoader.getInstance().getModContainer(BoatTweaks.ID).map(container -> container.getMetadata().getVersion().getFriendlyString()).orElseThrow();
 			if (!$.isDedicatedServer()) {
 				KiwiConfigManager.getHandler(BoatTweaksCommonConfig.class).refresh();
 			}
