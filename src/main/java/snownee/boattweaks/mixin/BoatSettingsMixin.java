@@ -44,7 +44,7 @@ public class BoatSettingsMixin implements BTConfigurableBoat {
 	@Inject(method = "<init>(Lnet/minecraft/world/entity/EntityType;Lnet/minecraft/world/level/Level;)V", at = @At("RETURN"))
 	private void init(CallbackInfo ci) {
 		Boat boat = (Boat) (Object) this;
-		boat.maxUpStep = BoatSettings.DEFAULT.stepUpHeight;
+		boat.setMaxUpStep(BoatSettings.DEFAULT.stepUpHeight);
 	}
 
 	@Redirect(
@@ -132,7 +132,7 @@ public class BoatSettingsMixin implements BTConfigurableBoat {
 	public void boattweaks$setSettings(@Nullable BoatSettings settings) {
 		this.settings = settings;
 		Boat boat = (Boat) (Object) this;
-		boat.maxUpStep = boattweaks$getSettings().stepUpHeight;
+		boat.setMaxUpStep(boattweaks$getSettings().stepUpHeight);
 	}
 
 }

@@ -3,7 +3,11 @@ package snownee.boattweaks.mixin;
 import java.util.IdentityHashMap;
 import java.util.Map;
 
+import net.minecraft.world.level.Level;
+
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Mutable;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -28,14 +32,24 @@ import snownee.boattweaks.duck.BTConfigurableBoat;
 @Mixin(Boat.class)
 public abstract class BoatSpecialBlockMixin implements BTBoostingBoat {
 
+	@Mutable
 	@Unique
-	private final Object2IntOpenCustomHashMap<Block> specialBlockCooldowns = new Object2IntOpenCustomHashMap<>(Math.min(BoatTweaks.CUSTOM_SPECIAL_BLOCKS.size(), 10), Util.identityStrategy());
+	@Final
+	private Object2IntOpenCustomHashMap<Block> specialBlockCooldowns = null;
 	@Unique
 	private final Map<Block, BlockPos> specialBlockRecords = new IdentityHashMap<>(Math.min(BoatTweaks.CUSTOM_SPECIAL_BLOCKS.size(), 10));
 	@Unique
 	private int eject;
 	@Unique
 	private int boostTicks;
+
+	@Inject(method = "<init>*", at = @At("RETURN"))
+	private void init(final CallbackInfo ci) {
+		specialBlockCooldowns = new Object2IntOpenCustomHashMap<>(
+				Math.min(BoatTweaks.CUSTOM_SPECIAL_BLOCKS.size(), 10),
+				Util.identityStrategy()
+		);
+	}
 
 	@Inject(
 			method = "getGroundFriction", at = @At(
@@ -46,15 +60,15 @@ public abstract class BoatSpecialBlockMixin implements BTBoostingBoat {
 		Boat boat = (Boat) (Object) this;
 		BoatSettings settings = ((BTConfigurableBoat) boat).boattweaks$getSettings();
 		if (boat.isControlledByLocalInstance() && blockState.is(settings.ejectingBlock)) {
-			if (this.eject == 0 && boat.level.isClientSide && !boat.isSilent()) {
-				boat.level.playLocalSound(boat.getX(), boat.getY(), boat.getZ(), BoatTweaks.EJECT.get(), boat.getSoundSource(), 1.0F, 1.0F, false);
+			if (this.eject == 0 && boat.level().isClientSide && !boat.isSilent()) {
+				boat.level().playLocalSound(boat.getX(), boat.getY(), boat.getZ(), BoatTweaks.EJECT.get(), boat.getSoundSource(), 1.0F, 1.0F, false);
 			}
 			int eject = 1;
 			int y = pos.getY();
 			BlockState blockState1;
 			while (true) {
 				pos.setY(y - eject);
-				blockState1 = boat.level.getBlockState(pos);
+				blockState1 = boat.level().getBlockState(pos);
 				if (!blockState1.is(settings.ejectingBlock)) {
 					break;
 				}
@@ -100,7 +114,7 @@ public abstract class BoatSpecialBlockMixin implements BTBoostingBoat {
 			if (BoatTweaks.CUSTOM_SPECIAL_BLOCKS.getInt(block) == cooldown) {
 				BlockPos pos = specialBlockRecords.get(block);
 				if (pos != null) {
-					BlockState blockState = boat.level.getBlockState(pos);
+					BlockState blockState = boat.level().getBlockState(pos);
 					if (blockState.is(block)) {
 						BoatTweaks.postSpecialBlockEvent(boat, blockState, pos);
 					}

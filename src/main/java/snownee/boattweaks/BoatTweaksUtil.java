@@ -30,7 +30,7 @@ public class BoatTweaksUtil {
 	}
 
 	public static void setMovementDistance(Boat boat, float distance) {
-		if (isClientSide(boat.level, "setMovementDistance")) {
+		if (isClientSide(boat.level(), "setMovementDistance")) {
 			return;
 		}
 		((BTMovementDistance) boat).boattweaks$setDistance(distance);
@@ -41,7 +41,7 @@ public class BoatTweaksUtil {
 	}
 
 	public static void setBoatSettings(Boat boat, @Nullable BoatSettings settings) {
-		if (isClientSide(boat.level, "setBoatSettings")) {
+		if (isClientSide(boat.level(), "setBoatSettings")) {
 			return;
 		}
 		((BTConfigurableBoat) boat).boattweaks$setSettings(settings);

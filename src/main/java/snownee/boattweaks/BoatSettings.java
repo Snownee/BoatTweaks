@@ -4,6 +4,7 @@ import it.unimi.dsi.fastutil.objects.Object2FloatMap;
 import it.unimi.dsi.fastutil.objects.Object2FloatMaps;
 import it.unimi.dsi.fastutil.objects.Object2FloatOpenHashMap;
 import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
@@ -36,7 +37,7 @@ public class BoatSettings {
 		int size = buf.readVarInt();
 		settings.frictionOverrides = new Object2FloatOpenHashMap<>(size);
 		for (int i = 0; i < size; i++) {
-			settings.frictionOverrides.put(Registry.BLOCK.byId(buf.readVarInt()), buf.readFloat());
+			settings.frictionOverrides.put(BuiltInRegistries.BLOCK.byId(buf.readVarInt()), buf.readFloat());
 		}
 		settings.frictionOverrides = Object2FloatMaps.unmodifiable(settings.frictionOverrides);
 		settings.forwardForce = buf.readFloat();
@@ -45,10 +46,10 @@ public class BoatSettings {
 		settings.turningForceInAir = buf.readFloat();
 		settings.stepUpHeight = buf.readFloat();
 		settings.outOfControlTicks = buf.readFloat();
-		settings.boostingBlock = Registry.BLOCK.byId(buf.readVarInt());
+		settings.boostingBlock = BuiltInRegistries.BLOCK.byId(buf.readVarInt());
 		settings.boostingTicks = buf.readVarInt();
 		settings.boostingForce = buf.readFloat();
-		settings.ejectingBlock = Registry.BLOCK.byId(buf.readVarInt());
+		settings.ejectingBlock = BuiltInRegistries.BLOCK.byId(buf.readVarInt());
 		settings.ejectingForce = buf.readFloat();
 		settings.wallHitSpeedLoss = buf.readFloat();
 		settings.wallHitCooldown = buf.readVarInt();
@@ -62,7 +63,7 @@ public class BoatSettings {
 		CompoundTag overridesTag = tag.getCompound("frictionOverrides");
 		settings.frictionOverrides = new Object2FloatOpenHashMap<>(overridesTag.size());
 		for (String key : overridesTag.getAllKeys()) {
-			Block block = Registry.BLOCK.get(ResourceLocation.tryParse(key));
+			Block block = BuiltInRegistries.BLOCK.get(ResourceLocation.tryParse(key));
 			if (block != Blocks.AIR) {
 				settings.frictionOverrides.put(block, overridesTag.getFloat(key));
 			}
@@ -74,10 +75,10 @@ public class BoatSettings {
 		settings.turningForceInAir = tag.getFloat("turningForceInAir");
 		settings.stepUpHeight = tag.getFloat("stepUpHeight");
 		settings.outOfControlTicks = tag.getFloat("outOfControlTicks");
-		settings.boostingBlock = Registry.BLOCK.get(ResourceLocation.tryParse(tag.getString("boostingBlock")));
+		settings.boostingBlock = BuiltInRegistries.BLOCK.get(ResourceLocation.tryParse(tag.getString("boostingBlock")));
 		settings.boostingTicks = tag.getInt("boostingTicks");
 		settings.boostingForce = tag.getFloat("boostingForce");
-		settings.ejectingBlock = Registry.BLOCK.get(ResourceLocation.tryParse(tag.getString("ejectingBlock")));
+		settings.ejectingBlock = BuiltInRegistries.BLOCK.get(ResourceLocation.tryParse(tag.getString("ejectingBlock")));
 		settings.ejectingForce = tag.getFloat("ejectingForce");
 		settings.wallHitSpeedLoss = tag.getFloat("wallHitSpeedLoss");
 		settings.wallHitCooldown = tag.getInt("wallHitCooldown");
@@ -90,7 +91,7 @@ public class BoatSettings {
 		BoatSettings settings = new BoatSettings();
 		settings.frictionOverrides = new Object2FloatOpenHashMap<>(BoatTweaksCommonConfig.frictionOverrides.size());
 		BoatTweaksCommonConfig.frictionOverrides.forEach((k, v) -> {
-			Block block = Registry.BLOCK.get(ResourceLocation.tryParse(k));
+			Block block = BuiltInRegistries.BLOCK.get(ResourceLocation.tryParse(k));
 			if (block != Blocks.AIR) {
 				settings.frictionOverrides.put(block, v.floatValue());
 			}
@@ -102,10 +103,10 @@ public class BoatSettings {
 		settings.turningForceInAir = BoatTweaksCommonConfig.turningForceInAir;
 		settings.stepUpHeight = BoatTweaksCommonConfig.stepUpHeight;
 		settings.outOfControlTicks = BoatTweaksCommonConfig.outOfControlTicks;
-		settings.boostingBlock = Registry.BLOCK.get(ResourceLocation.tryParse(BoatTweaksCommonConfig.boostingBlock));
+		settings.boostingBlock = BuiltInRegistries.BLOCK.get(ResourceLocation.tryParse(BoatTweaksCommonConfig.boostingBlock));
 		settings.boostingTicks = BoatTweaksCommonConfig.boostingTicks;
 		settings.boostingForce = BoatTweaksCommonConfig.boostingForce;
-		settings.ejectingBlock = Registry.BLOCK.get(ResourceLocation.tryParse(BoatTweaksCommonConfig.ejectingBlock));
+		settings.ejectingBlock = BuiltInRegistries.BLOCK.get(ResourceLocation.tryParse(BoatTweaksCommonConfig.ejectingBlock));
 		settings.ejectingForce = BoatTweaksCommonConfig.ejectingForce;
 		settings.wallHitSpeedLoss = BoatTweaksCommonConfig.wallHitSpeedLoss;
 		settings.wallHitCooldown = BoatTweaksCommonConfig.wallHitCooldown;
@@ -118,7 +119,7 @@ public class BoatSettings {
 	public void toNetwork(FriendlyByteBuf buf) {
 		buf.writeVarInt(frictionOverrides.size());
 		frictionOverrides.forEach((k, v) -> {
-			buf.writeVarInt(Registry.BLOCK.getId(k));
+			buf.writeVarInt(BuiltInRegistries.BLOCK.getId(k));
 			buf.writeFloat(v);
 		});
 		buf.writeFloat(forwardForce);
@@ -127,10 +128,10 @@ public class BoatSettings {
 		buf.writeFloat(turningForceInAir);
 		buf.writeFloat(stepUpHeight);
 		buf.writeFloat(outOfControlTicks);
-		buf.writeVarInt(Registry.BLOCK.getId(boostingBlock));
+		buf.writeVarInt(BuiltInRegistries.BLOCK.getId(boostingBlock));
 		buf.writeVarInt(boostingTicks);
 		buf.writeFloat(boostingForce);
-		buf.writeVarInt(Registry.BLOCK.getId(ejectingBlock));
+		buf.writeVarInt(BuiltInRegistries.BLOCK.getId(ejectingBlock));
 		buf.writeFloat(ejectingForce);
 		buf.writeFloat(wallHitSpeedLoss);
 		buf.writeVarInt(wallHitCooldown);
@@ -142,7 +143,7 @@ public class BoatSettings {
 	public CompoundTag toNBT() {
 		CompoundTag tag = new CompoundTag();
 		CompoundTag overridesTag = new CompoundTag();
-		frictionOverrides.forEach((k, v) -> overridesTag.putFloat(Registry.BLOCK.getKey(k).toString(), v));
+		frictionOverrides.forEach((k, v) -> overridesTag.putFloat(BuiltInRegistries.BLOCK.getKey(k).toString(), v));
 		tag.put("frictionOverrides", overridesTag);
 		tag.putFloat("forwardForce", forwardForce);
 		tag.putFloat("backwardForce", backwardForce);
@@ -150,10 +151,10 @@ public class BoatSettings {
 		tag.putFloat("turningForceInAir", turningForceInAir);
 		tag.putFloat("stepUpHeight", stepUpHeight);
 		tag.putFloat("outOfControlTicks", outOfControlTicks);
-		tag.putString("boostingBlock", Registry.BLOCK.getKey(boostingBlock).toString());
+		tag.putString("boostingBlock", BuiltInRegistries.BLOCK.getKey(boostingBlock).toString());
 		tag.putInt("boostingTicks", boostingTicks);
 		tag.putFloat("boostingForce", boostingForce);
-		tag.putString("ejectingBlock", Registry.BLOCK.getKey(ejectingBlock).toString());
+		tag.putString("ejectingBlock", BuiltInRegistries.BLOCK.getKey(ejectingBlock).toString());
 		tag.putFloat("ejectingForce", ejectingForce);
 		tag.putFloat("wallHitSpeedLoss", wallHitSpeedLoss);
 		tag.putInt("wallHitCooldown", wallHitCooldown);
