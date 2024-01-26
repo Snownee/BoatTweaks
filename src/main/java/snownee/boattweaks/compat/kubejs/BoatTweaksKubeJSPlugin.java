@@ -4,6 +4,8 @@ import dev.latvian.mods.kubejs.KubeJSPlugin;
 import dev.latvian.mods.kubejs.script.BindingsEvent;
 import dev.latvian.mods.kubejs.script.ScriptType;
 import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import snownee.boattweaks.BoatSettings;
 import snownee.boattweaks.BoatTweaks;
 import snownee.boattweaks.BoatTweaksUtil;
@@ -18,7 +20,7 @@ public class BoatTweaksKubeJSPlugin extends KubeJSPlugin {
 				return;
 			}
 			SpecialBlockEventJS event = new SpecialBlockEventJS(boat, blockState, blockPos);
-			BoatTweaksKubeJSEvents.ON_SPECIAL_BLOCK.post(ScriptType.STARTUP, Registry.BLOCK.getKey(blockState.getBlock()), event);
+			BoatTweaksKubeJSEvents.ON_SPECIAL_BLOCK.post(ScriptType.STARTUP, BuiltInRegistries.BLOCK.getKey(blockState.getBlock()), event);
 		});
 	}
 

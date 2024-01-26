@@ -1,5 +1,5 @@
 plugins {
-	id 'fabric-loom' version '1.0-SNAPSHOT'
+	id 'fabric-loom' version '1.1.+'
 	id 'maven-publish'
     id "me.shedaniel.unified-publishing" version "0.1.+"
 }
@@ -12,6 +12,17 @@ version = project.minecraft_version + "-fabric-" + project.mod_version
 group = project.maven_group
 
 repositories {
+    exclusiveContent {
+        forRepository {
+            maven {
+                name = "Modrinth"
+                url = "https://api.modrinth.com/maven"
+            }
+        }
+        filter {
+            includeGroup "maven.modrinth"
+        }
+    }
     maven {
         // Shedaniel's maven (Architectury API)
         url = "https://maven.architectury.dev"
@@ -54,8 +65,7 @@ dependencies {
 
 	//modImplementation "dev.emi:emi:${emi_version}"
 
-	modImplementation "curse.maven:kiwi-549404:4400668"
-    annotationProcessor "curse.maven:kiwi-549404:4400668"
+    modImplementation annotationProcessor("maven.modrinth:kiwi:${project.kiwi_version}-fabric")
 
     modImplementation("dev.architectury:architectury-fabric:${project.architectury_version}")
     modApi("me.shedaniel.cloth:cloth-config-fabric:${project.cloth_config_version}") {

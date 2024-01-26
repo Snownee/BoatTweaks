@@ -27,8 +27,8 @@ public class BoatTweaks extends AbstractModule {
 
 	public static final String ID = "boattweaks";
 	public static final Logger LOGGER = LogUtils.getLogger();
-	public static final KiwiGO<SoundEvent> BOOST = go(() -> new SoundEvent(new ResourceLocation(ID, "boost")));
-	public static final KiwiGO<SoundEvent> EJECT = go(() -> new SoundEvent(new ResourceLocation(ID, "eject")));
+	public static final KiwiGO<SoundEvent> BOOST = go(() ->  SoundEvent.createVariableRangeEvent(new ResourceLocation(ID, "boost")));
+	public static final KiwiGO<SoundEvent> EJECT = go(() ->  SoundEvent.createVariableRangeEvent(new ResourceLocation(ID, "eject")));
 	public static final GameRules.Key<GameRules.BooleanValue> AUTO_REMOVE_BOAT = GameRules.register(ID + ":autoRemoveBoat", GameRules.Category.MISC, GameRules.BooleanValue.create(false));
 	public static final GameRules.Key<GameRules.BooleanValue> GHOST_MODE = GameRules.register(ID + ":ghostMode", GameRules.Category.MISC, GameRules.BooleanValue.create(false, (server, rule) -> {
 		server.getPlayerList().getPlayers().forEach(p -> {

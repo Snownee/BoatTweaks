@@ -43,7 +43,7 @@ public class BoatMovementDistanceMixin implements BTMovementDistance {
 	@Inject(method = "tick", at = @At("TAIL"))
 	private void postTick(CallbackInfo ci) {
 		Boat boat = (Boat) (Object) this;
-		if (boat.level.isClientSide) {
+		if (boat.level().isClientSide) {
 			return;
 		}
 		updateDistance();

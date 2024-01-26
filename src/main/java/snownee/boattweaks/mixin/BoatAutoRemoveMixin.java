@@ -1,5 +1,7 @@
 package snownee.boattweaks.mixin;
 
+import net.minecraft.world.level.Level;
+
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -31,16 +33,17 @@ public class BoatAutoRemoveMixin {
 	@Inject(method = "tick", at = @At("HEAD"), cancellable = true)
 	private void tick(CallbackInfo ci) {
 		Boat boat = (Boat) (Object) this;
-		if (boat.level.isClientSide || boat instanceof ChestBoat) {
+		final var level = boat.level();
+		if (level.isClientSide || boat instanceof ChestBoat) {
 			return;
 		}
-		if (!boat.level.getGameRules().getBoolean(BoatTweaks.AUTO_REMOVE_BOAT)) {
+		if (!level.getGameRules().getBoolean(BoatTweaks.AUTO_REMOVE_BOAT)) {
 			return;
 		}
-		long gameTime = boat.level.getGameTime();
+		long gameTime = level.getGameTime();
 		if (boat.getControllingPassenger() instanceof Player) {
 			lastTimeRiding = gameTime;
-		} else if (gameTime - lastTimeRiding > 40 && gameTime % 20 == 0 && boat.level.getNearestPlayer(boat, 5) == null) {
+		} else if (gameTime - lastTimeRiding > 40 && gameTime % 20 == 0 && level.getNearestPlayer(boat, 5) == null) {
 			boat.discard();
 			ci.cancel();
 		}

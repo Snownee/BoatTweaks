@@ -34,7 +34,7 @@ public class CommonProxy implements ModInitializer {
 		});
 		ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
 			SSyncSettingsPacket.sync(handler.player, BoatSettings.DEFAULT, Integer.MIN_VALUE);
-			if (handler.player.level.getGameRules().getBoolean(BoatTweaks.GHOST_MODE)) {
+			if (handler.player.level().getGameRules().getBoolean(BoatTweaks.GHOST_MODE)) {
 				SUpdateGhostModePacket.sync(handler.player, true);
 			}
 		});
