@@ -32,10 +32,9 @@ import snownee.boattweaks.duck.BTConfigurableBoat;
 @Mixin(Boat.class)
 public abstract class BoatSpecialBlockMixin implements BTBoostingBoat {
 
-	@Mutable
-	@Unique
 	@Final
-	private Object2IntOpenCustomHashMap<Block> specialBlockCooldowns = null;
+	@Unique
+	private Object2IntOpenCustomHashMap<Block> specialBlockCooldowns;
 	@Unique
 	private final Map<Block, BlockPos> specialBlockRecords = new IdentityHashMap<>(Math.min(BoatTweaks.CUSTOM_SPECIAL_BLOCKS.size(), 10));
 	@Unique
@@ -45,6 +44,7 @@ public abstract class BoatSpecialBlockMixin implements BTBoostingBoat {
 
 	@Inject(method = "<init>*", at = @At("RETURN"))
 	private void init(final CallbackInfo ci) {
+		//noinspection ShadowFinalModification
 		specialBlockCooldowns = new Object2IntOpenCustomHashMap<>(
 				Math.min(BoatTweaks.CUSTOM_SPECIAL_BLOCKS.size(), 10),
 				Util.identityStrategy()
