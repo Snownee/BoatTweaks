@@ -3,11 +3,8 @@ package snownee.boattweaks.mixin;
 import java.util.IdentityHashMap;
 import java.util.Map;
 
-import net.minecraft.world.level.Level;
-
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Mutable;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;

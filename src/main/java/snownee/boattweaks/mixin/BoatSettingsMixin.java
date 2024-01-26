@@ -47,6 +47,7 @@ public class BoatSettingsMixin implements BTConfigurableBoat {
 		boat.setMaxUpStep(BoatSettings.DEFAULT.stepUpHeight);
 	}
 
+	//TODO (1.21): use MixinExtras
 	@Redirect(
 			method = "getGroundFriction", at = @At(
 			value = "INVOKE", target = "Lnet/minecraft/world/level/block/Block;getFriction()F"
